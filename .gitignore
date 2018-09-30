@@ -1,2 +1,5 @@
+# Data files
+*.dat
+
 # Auxilliary files
 Pipfile

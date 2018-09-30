@@ -17,7 +17,7 @@ import numba
 
 NTHERM_INIT = 1000  # number of thermalisation sweeps in the beginning
 NTHERM = 1000  # number of thermalisation sweeps per temperature
-NPROD = 100  # number of production sweeps (with measurements) per temperature
+NPROD = 10000  # number of production sweeps (with measurements) per temperature
 
 NX = 5  # number of lattice sites in x direction
 NY = 5  # number of lattice sites in y direction

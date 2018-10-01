@@ -34,8 +34,7 @@ SEED = 538
 
 def prepare_datadir():
     """
-    Create the output data directory and writes the
-    temperature file.
+    Create the output data directory and write the temperature file.
     Deletes the directory and all its contents if it exists.
 
     Returns:
@@ -77,13 +76,13 @@ class Observables:
 
 def hamiltonian(cfg):
     """
-    Evaluate the hamiltonian on a given configuration.
+    Evaluate the Hamiltonian on a given configuration.
     """
     # Use numpy.roll to shift the array in x or y direction by one site.
     # This way, cfg*no.roll(...) multiplies nearest neighbours with the
     # speed of numpy.
-    return - np.sum(cfg*np.roll(cfg, -1, axis=0)) \
-        - np.sum(cfg*np.roll(cfg, -1, axis=1))
+    return - 2*(np.sum(cfg*np.roll(cfg, -1, axis=0))
+                + np.sum(cfg*np.roll(cfg, -1, axis=1)))
 
 def magnetisation(cfg):
     """
@@ -108,8 +107,9 @@ def delta_e(cfg, x, y):
 def evolve(cfg, energy, beta, nsweep, obs):
     """
     Evolve a spin configuration in Monte-Carlo time by flipping spins
-    at random sites nstep times and accepting or rejecting the change
+    at random sites nsweep*NX*NY times and accepting or rejecting the change
     using the Metropolis-Hastings algroithm.
+    Measures observables every NX*NY steps, i.e. once per sweep.
 
     Parameters:
         cfg: Initial configuration.
@@ -144,7 +144,7 @@ def evolve(cfg, energy, beta, nsweep, obs):
 
             # test if change is accepted
             # The first check is not necessary for this to be correct but avoids
-            # evaluationg the costly exponential and RNG.
+            # evaluating the costly exponential and RNG.
             if delta <= 0 or np.exp(-beta*delta) > np.random.uniform(0, 1):
                 cfg[x, y] = -cfg[x, y]  # apply the accepted change
                 energy += delta

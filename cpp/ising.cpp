@@ -154,7 +154,7 @@ void prepareDatadir(fs::path const &datadir, std::array<double, NTEMP> const &te
 
     // write temperatures and indices
     std::ofstream ofs;
-    ofs.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     ofs.open(datadir/"temperatures.dat");
     for (size_t i = 0; i < temperatures.size(); ++i) {
         ofs << i << ": " << temperatures[i] << '\n';
@@ -165,7 +165,7 @@ void prepareDatadir(fs::path const &datadir, std::array<double, NTEMP> const &te
 void write(fs::path const &fname, Observables const &obs)
 {
     std::ofstream ofs;
-    ofs.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     ofs.open(fname);
 
     for (auto const &energy : obs.energy)

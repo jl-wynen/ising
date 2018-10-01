@@ -77,7 +77,7 @@ class Observables:
 
 def hamiltonian(cfg):
     """
-    Evaluate the hemiltonian on a given configuration.
+    Evaluate the hamiltonian on a given configuration.
     """
     # Use numpy.roll to shift the array in x or y direction by one site.
     # This way, cfg*no.roll(...) multiplies nearest neighbours with the
@@ -177,7 +177,7 @@ def main():
 
     # run initial thermalization
     cfg, energy, naccept = evolve(cfg, energy, 1/TEMPERATURES[0], NTHERM_INIT, None)
-    print(f"Initial thermalisation acceptance rate: {naccept/NTHERM_INIT}")
+    print(f"Initial thermalisation acceptance rate: {naccept/NTHERM_INIT/NX/NY}")
 
     for itemp, temperature in enumerate(TEMPERATURES):
         print(f"Running T = {temperature}")
@@ -185,12 +185,12 @@ def main():
 
         # thermalise
         cfg, energy, naccept = evolve(cfg, energy, beta, NTHERM, None)
-        print(f"  Thermalisation acceptance rate: {naccept/NTHERM}")
+        print(f"  Thermalisation acceptance rate: {naccept/NTHERM/NX/NY}")
 
         # measure
         obs = Observables([], [])
         cfg, energy, naccept = evolve(cfg, energy, beta, NPROD, obs)
-        print(f"  Production acceptance rate: {naccept/NPROD}")
+        print(f"  Production acceptance rate: {naccept/NPROD/NX/NY}")
 
         # save result
         np.savetxt(str(datadir/f"{itemp}.dat"), (obs.energy, obs.magnetisation))

@@ -1,5 +1,8 @@
 # Data files
 *.dat
 
+# C++ binaries
+cpp/build
+
 # Auxilliary files
 Pipfile

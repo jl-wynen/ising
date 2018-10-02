@@ -27,7 +27,7 @@ constexpr Index NX = 16;  // number of lattice sites in x direction
 constexpr Index NY = 16;  // number of lattice sites in y direction
 
 // seed for the random number generator
-constexpr int SEED = 538;
+constexpr unsigned long SEED = 538;
 
 // Return an array of temperatures to run the simulation with.
 constexpr auto listTemperatures() noexcept {
@@ -50,8 +50,8 @@ constexpr auto listTemperatures() noexcept {
 /// Helper class to handle a random number generator.
 struct Rng
 {
-    // std::knuth_b rng;  ///< The generator.
-    pcg::pcg32 rng;
+    /// The generator.
+    std::mt19937 rng;
     /// Distribution to generator lattice indices.
     std::uniform_int_distribution<Index> indexDist;
     /// Distribution to generate floating point numbers in [0, 1].
@@ -60,7 +60,7 @@ struct Rng
     std::uniform_int_distribution<int> spinDist;
 
     /// Seed the rng and set up distributions.
-    explicit Rng(int const seed) : rng{seed}, indexDist{0, NX*NY-1},
+    explicit Rng(unsigned long const seed) : rng{seed}, indexDist{0, NX*NY-1},
                                    realDist{0, 1}, spinDist{0, 1}
     { }
 

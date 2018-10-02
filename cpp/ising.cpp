@@ -14,17 +14,17 @@
 namespace fs = std::filesystem;
 
 /// Type for indexes into configurations.
-using index = size_t;
+using Index = size_t;
 
 //--------------------------
 // Set run parameters here.
 
 constexpr size_t NTHERM_INIT = 1000;  // number of thermalisation sweeps in the beginning
 constexpr size_t NTHERM = 1000;  // number of thermalisation sweeps per temperature
-constexpr size_t NPROD = 10000;  // number of production sweeps (with measurements) per temperature
+constexpr size_t NPROD = 100000;  // number of production sweeps (with measurements) per temperature
 
-constexpr index NX = 5;  // number of lattice sites in x direction
-constexpr index NY = 5;  // number of lattice sites in y direction
+constexpr Index NX = 16;  // number of lattice sites in x direction
+constexpr Index NY = 16;  // number of lattice sites in y direction
 
 // seed for the random number generator
 constexpr int SEED = 538;
@@ -50,9 +50,10 @@ constexpr auto listTemperatures() noexcept {
 /// Helper class to handle a random number generator.
 struct Rng
 {
-    std::ranlux24 rng;  ///< The generator.
+    // std::knuth_b rng;  ///< The generator.
+    pcg::pcg32 rng;
     /// Distribution to generator lattice indices.
-    std::uniform_int_distribution<index> indexDist;
+    std::uniform_int_distribution<Index> indexDist;
     /// Distribution to generate floating point numbers in [0, 1].
     std::uniform_real_distribution<double> realDist;
     /// Distribution to generate spins, i.e. values 0 or 1.
@@ -64,7 +65,7 @@ struct Rng
     { }
 
     /// Generate a random index into a configuration.
-    index genIndex()
+    Index genIndex()
     {
         return indexDist(rng);
     }
@@ -99,8 +100,8 @@ struct Configuration
     /// Build list of neighbour indices.
     Configuration()
     {
-        for (index y = 0; y < NY; ++y) {
-            for (index x = 0; x < NX; ++x) {
+        for (Index y = 0; y < NY; ++y) {
+            for (Index x = 0; x < NX; ++x) {
                 neighbours[(y*NX+x)*4 + 0] = x == NX-1 ? (y*NX) : (y*NX + x+1);
                 neighbours[(y*NX+x)*4 + 1] = x == 0 ? (y*NX + NX-1) : (y*NX + x-1);
                 neighbours[(y*NX+x)*4 + 2] = y == NY-1 ? x : ((y+1)*NX + x);
@@ -110,22 +111,22 @@ struct Configuration
     }
 
     /// Access site by total index.
-    int &operator[](index const idx) noexcept {
+    int &operator[](Index const idx) noexcept {
         return cfg[idx];
     }
 
     /// Access site by total index.
-    int const &operator[](index const idx) const noexcept {
+    int const &operator[](Index const idx) const noexcept {
         return cfg[idx];
     }
 
     /// Access site by individual indices.
-    int &operator()(index const x, index const y) noexcept {
+    int &operator()(Index const x, Index const y) noexcept {
         return cfg[y*NX+x];
     }
 
     /// Access site by individual indices.
-    int const &operator()(index const x, index const y) const noexcept {
+    int const &operator()(Index const x, Index const y) const noexcept {
         return cfg[y*NX+x];
     }
 };
@@ -181,7 +182,7 @@ void write(fs::path const &fname, Observables const &obs)
 Configuration randomCfg(Rng &rng)
 {
     Configuration cfg;
-    for (index i = 0; i < NX*NY; ++i) {
+    for (Index i = 0; i < NX*NY; ++i) {
         cfg[i] = rng.genSpin();
     }
     return cfg;
@@ -191,7 +192,7 @@ Configuration randomCfg(Rng &rng)
 int hamiltonian(Configuration const &cfg) noexcept
 {
     int energy = 0;
-    for (index idx = 0; idx < NX*NY; ++idx) {
+    for (Index idx = 0; idx < NX*NY; ++idx) {
         energy += cfg[idx] * (cfg[cfg.neighbours[4*idx]]
                               + cfg[cfg.neighbours[4*idx+1]]
                               + cfg[cfg.neighbours[4*idx+2]]
@@ -208,7 +209,7 @@ double magnetisation(Configuration const &cfg) noexcept
 }
 
 /// Compute the change in energy if the spin at site idx were flipped.
-int deltaE(Configuration const &cfg, index const idx) noexcept
+int deltaE(Configuration const &cfg, Index const idx) noexcept
 {
     return 2*cfg[idx] * (cfg[cfg.neighbours[4*idx]]
                          + cfg[cfg.neighbours[4*idx+1]]
@@ -241,9 +242,11 @@ auto evolve(Configuration cfg, double energy, double const beta,
 {
     size_t naccept = 0;  // running number of accepted spin flips
 
+    Exp exp(beta);
+
     for (size_t sweep = 0; sweep < nsweep; ++sweep) {
         for (size_t step = 0; step < NX*NY; ++step) {
-            index const idx = rng.genIndex();  // flip spin at this site
+            Index const idx = rng.genIndex();  // flip spin at this site
 
             int const delta = deltaE(cfg, idx);  // proposed change in energy
 

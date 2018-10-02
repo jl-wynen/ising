@@ -17,6 +17,7 @@ namespace fs = std::filesystem;
 /// Type for indexes into configurations.
 using Index = size_t;
 
+
 //--------------------------
 // Set run parameters here.
 
@@ -47,12 +48,13 @@ constexpr auto listTemperatures() noexcept {
 // End of run parameters.
 //------------------------
 
+
+// save as a constexpr bool for non-macro metaprogramming
 #ifndef NDEBUG
 constexpr bool ndebug = false;
 #else
 constexpr bool ndebug = true;
 #endif
-
 
 /// Helper class to handle a random number generator.
 struct Rng
@@ -119,37 +121,37 @@ struct Configuration
 
     /// Access site by total index.
     int &operator[](Index const idx) noexcept(ndebug) {
-#ifndef NDEBUG
-        if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
-            throw std::out_of_range("Configuration index is out of range.");
-#endif
+        if constexpr (not ndebug) {
+            if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+                throw std::out_of_range("Configuration index is out of range.");
+        }
         return cfg[idx];
     }
 
     /// Access site by total index.
     int const &operator[](Index const idx) const noexcept(ndebug) {
-#ifndef NDEBUG
-        if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
-            throw std::out_of_range("Configuration index is out of range.");
-#endif
+        if constexpr (not ndebug) {
+            if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+                throw std::out_of_range("Configuration index is out of range.");
+        }
         return cfg[idx];
     }
 
     /// Access site by individual indices.
     int &operator()(Index const x, Index const y) noexcept(ndebug) {
-#ifndef NDEBUG
-        if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
-            throw std::out_of_range("Configuration index is out of range.");
-#endif
+        if constexpr (not ndebug) {
+            if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+                throw std::out_of_range("Configuration index is out of range.");
+        }
         return cfg[y*NX+x];
     }
 
     /// Access site by individual indices.
     int const &operator()(Index const x, Index const y) const noexcept(ndebug) {
-#ifndef NDEBUG
-        if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
-            throw std::out_of_range("Configuration index is out of range.");
-#endif
+        if constexpr (not ndebug) {
+            if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+                throw std::out_of_range("Configuration index is out of range.");
+        }
         return cfg[y*NX+x];
     }
 };
@@ -258,10 +260,10 @@ struct Exp
      */
     double operator()(int const delta) const noexcept(ndebug)
     {
-#ifndef NDEBUG
-        if (delta != 4 and delta != 8)
-            throw std::invalid_argument("Unsupported parameter in Exp::operator().");
-#endif
+        if constexpr (not ndebug) {
+            if (delta != 4 and delta != 8)
+                throw std::invalid_argument("Unsupported parameter in Exp::operator().");
+        }
         return (delta==4) ? exp4 : exp8;
     }
 

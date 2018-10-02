@@ -10,6 +10,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
+#include <exception>
 
 namespace fs = std::filesystem;
 
@@ -21,7 +22,7 @@ using Index = size_t;
 
 constexpr size_t NTHERM_INIT = 1000;  // number of thermalisation sweeps in the beginning
 constexpr size_t NTHERM = 1000;  // number of thermalisation sweeps per temperature
-constexpr size_t NPROD = 100000;  // number of production sweeps (with measurements) per temperature
+constexpr size_t NPROD = 10000;  // number of production sweeps (with measurements) per temperature
 
 constexpr Index NX = 16;  // number of lattice sites in x direction
 constexpr Index NY = 16;  // number of lattice sites in y direction
@@ -45,6 +46,12 @@ constexpr auto listTemperatures() noexcept {
 
 // End of run parameters.
 //------------------------
+
+#ifndef NDEBUG
+constexpr bool ndebug = false;
+#else
+constexpr bool ndebug = true;
+#endif
 
 
 /// Helper class to handle a random number generator.
@@ -217,6 +224,35 @@ int deltaE(Configuration const &cfg, Index const idx) noexcept
                          + cfg[cfg.neighbours[4*idx+3]]);
 }
 
+/// Exponential function for acceptance probability.
+struct Exp
+{
+    /// Precompute possible values.
+    /**
+     * \param beta Coefficient in fron to energy difference (J/(k_B T)).
+     */
+    explicit Exp(double const beta) noexcept
+        : exp4{std::exp(-beta*4)}, exp8{std::exp(-beta*8)} { }
+
+    /// Evaluate function.
+    /**
+     * \param delta Energy difference.
+     * \returns exp(-beta*delta).
+     * \attention Only allows values delta = 4,8. Checks in debug build.
+     */
+    double operator()(int const delta) const noexcept(ndebug)
+    {
+#ifndef NDEBUG
+        if (delta != 4 and delta != 8)
+            throw std::invalid_argument("Unsupported parameter in Exp::operator().");
+#endif
+        return (delta==4) ? exp4 : exp8;
+    }
+
+private:
+    double const exp4, exp8;
+};
+
 /// Evolve a configuration in Monte-Carlo time.
 /**
  * Flips spins at random sites nsweep*NX*NY times and accepting or
@@ -241,8 +277,7 @@ auto evolve(Configuration cfg, double energy, double const beta,
             Rng &rng, size_t const nsweep, Observables * const obs)
 {
     size_t naccept = 0;  // running number of accepted spin flips
-
-    Exp exp(beta);
+    Exp exp(beta);  // fast way to compute exponentials
 
     for (size_t sweep = 0; sweep < nsweep; ++sweep) {
         for (size_t step = 0; step < NX*NY; ++step) {
@@ -253,7 +288,7 @@ auto evolve(Configuration cfg, double energy, double const beta,
             // Metropolis-Hastings accept-reject
             // The first check is not necessary for this to be correct but avoids
             // evaluating the costly exponential and RNG.
-            if (delta <= 0 or std::exp(-beta*delta) > rng.genReal()) {
+            if (delta <= 0 or exp(delta) > rng.genReal()) {
                 // accept change
                 cfg[idx] *= -1;
                 energy += delta;

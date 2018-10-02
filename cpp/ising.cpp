@@ -118,22 +118,38 @@ struct Configuration
     }
 
     /// Access site by total index.
-    int &operator[](Index const idx) noexcept {
+    int &operator[](Index const idx) noexcept(ndebug) {
+#ifndef NDEBUG
+        if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+            throw std::out_of_range("Configuration index is out of range.");
+#endif
         return cfg[idx];
     }
 
     /// Access site by total index.
-    int const &operator[](Index const idx) const noexcept {
+    int const &operator[](Index const idx) const noexcept(ndebug) {
+#ifndef NDEBUG
+        if (idx >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+            throw std::out_of_range("Configuration index is out of range.");
+#endif
         return cfg[idx];
     }
 
     /// Access site by individual indices.
-    int &operator()(Index const x, Index const y) noexcept {
+    int &operator()(Index const x, Index const y) noexcept(ndebug) {
+#ifndef NDEBUG
+        if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+            throw std::out_of_range("Configuration index is out of range.");
+#endif
         return cfg[y*NX+x];
     }
 
     /// Access site by individual indices.
-    int const &operator()(Index const x, Index const y) const noexcept {
+    int const &operator()(Index const x, Index const y) const noexcept(ndebug) {
+#ifndef NDEBUG
+        if (y*NX+x >= cfg.size())  // Index is unsigned => this thecks also for 'idx < 0'.
+            throw std::out_of_range("Configuration index is out of range.");
+#endif
         return cfg[y*NX+x];
     }
 };

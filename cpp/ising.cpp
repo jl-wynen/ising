@@ -342,7 +342,7 @@ int main(int const argc, char const * const argv[])
     size_t naccept;
 
     // start measuring time now
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto const startTime = std::chrono::high_resolution_clock::now();
 
     // initial thermalisation
     std::tie(cfg, energy, naccept) = evolve(cfg, energy, 1./temperatures[0], rng, NTHERM_INIT, nullptr);
@@ -369,7 +369,7 @@ int main(int const argc, char const * const argv[])
         write(datadir/(std::to_string(itemp)+".dat"), obs);
     }
 
-    auto endTime = std::chrono::high_resolution_clock::now();
+    auto const endTime = std::chrono::high_resolution_clock::now();
     std::cout << "Duration in wall clock time: " << std::setprecision(4)
               << std::chrono::duration<float>(endTime-startTime).count() << "s\n";
 }

@@ -34,15 +34,15 @@ constexpr unsigned long SEED = 538;
 // Return an array of temperatures to run the simulation with.
 constexpr auto listTemperatures() noexcept {
     // linearly interpolate between 0.4 and 6.0
-    constexpr size_t N = 10;
-    std::array<double, N> temps{};
-    for (size_t i = 0; i < N; ++i) {
-        temps[i] = 6. - (6.-0.4)/N*i;
-    }
-    return temps;
+    // constexpr size_t N = 10;
+    // std::array<double, N> temps{};
+    // for (size_t i = 0; i < N; ++i) {
+    //     temps[i] = 6. - (6.-0.4)/N*i;
+    // }
+    // return temps;
 
     // just one element
-    // return std::array{2.};
+    return std::array{2.};
 }
 
 // End of run parameters.
@@ -294,6 +294,7 @@ private:
 auto evolve(Configuration cfg, double energy, double const beta,
             Rng &rng, size_t const nsweep, Observables * const obs)
 {
+
     size_t naccept = 0;  // running number of accepted spin flips
     Exp exp(beta);  // fast way to compute exponentials
 
@@ -322,7 +323,7 @@ auto evolve(Configuration cfg, double energy, double const beta,
         }
     }
 
-    return std::make_tuple(cfg, energy, naccept);
+    return std::make_tuple(std::move(cfg), energy, naccept);
 }
 
 int main(int const argc, char const * const argv[])

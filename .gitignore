@@ -4,5 +4,9 @@
 # C++ binaries
 cpp/build
 
+# Rust files
+Cargo.lock
+rust/target
+
 # Auxilliary files
 Pipfile

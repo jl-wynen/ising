@@ -1,11 +1,20 @@
+/**
+ * Rust implementation of the Ising Model simulation.
+ */
+
 use std::io::prelude::*;
 use std::fs;
 use std::path::Path;
 use std::ops::{Index, IndexMut};
 use std::time::Instant;
+use std::env;
 
 extern crate rand;
 use rand::prelude::*;
+
+
+//--------------------------
+// Set run parameters here.
 
 const NX: usize = 4;
 const NY: usize = 3;
@@ -14,6 +23,9 @@ const LATSIZE: usize = NX*NY;
 const NTHERM_INIT: usize = 1000;
 const NTHERM: usize = 1000;
 const NPROD: usize = 10000;
+
+// End of run parameters.
+//------------------------
 
 struct Rng {
     rng: StdRng,
@@ -175,7 +187,14 @@ fn evolve(cfg: &mut Configuration, energy: &mut f64, beta: f64,
 
 
 fn main() {
-    let datadir = Path::new("./data");
+    let args: Vec<String> = env::args().collect();
+    let datadir = if args.len() == 2 {
+        Path::new(&args[1])
+    }
+    else {
+        Path::new("./data")
+    };
+
     let mut temperatures: Vec<f64> = Vec::new();
     for i in 0..12 {
         temperatures.push((i as f64 + 1.)*0.5);

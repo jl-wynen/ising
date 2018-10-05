@@ -14,8 +14,4 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   target_compile_options(ising PUBLIC -Wno-c++98-compat)
 endif()
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
-  target_compile_options(ising PUBLIC -march=native)
-endif ()
-
 target_link_libraries(ising stdc++fs)

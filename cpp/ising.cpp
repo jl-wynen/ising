@@ -1,3 +1,7 @@
+/**
+ * C++ implementation of the Ising Model simulation.
+ */
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -70,7 +74,7 @@ struct Rng
 
     /// Seed the rng and set up distributions.
     explicit Rng(unsigned long const seed) : rng{seed}, indexDist{0, NX*NY-1},
-                                   realDist{0, 1}, spinDist{0, 1}
+                                             realDist{0, 1}, spinDist{0, 1}
     { }
 
     /// Generate a random index into a configuration.
@@ -294,7 +298,6 @@ private:
 auto evolve(Configuration cfg, double energy, double const beta,
             Rng &rng, size_t const nsweep, Observables * const obs)
 {
-
     size_t naccept = 0;  // running number of accepted spin flips
     Exp exp(beta);  // fast way to compute exponentials
 
@@ -354,7 +357,7 @@ int main(int const argc, char const * const argv[])
         std::cout << "Running T = " << temperatures[itemp] << '\n';
         auto const beta = 1./temperatures[itemp];
 
-        // thermalise
+        // re-thermalise
         std::tie(cfg, energy, naccept) = evolve(cfg, energy, beta, rng, NTHERM, nullptr);
         std::cout << "  Thermalisation acceptance rate: "
                   << static_cast<double>(naccept)/NTHERM/NX/NY << '\n';

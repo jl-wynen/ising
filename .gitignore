@@ -8,5 +8,8 @@ cpp/build
 Cargo.lock
 rust/target
 
+# benchmarks
+*.ben
+
 # Auxilliary files
 Pipfile

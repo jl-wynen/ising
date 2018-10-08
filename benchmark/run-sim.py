@@ -80,7 +80,7 @@ def run_cpp(sizes, wdir):
     shutil.copy(cmake_file_in, cmake_file)
     shutil.copy(CPP_SRC, source)
     build_dir.mkdir()
-    subprocess.run(["cmake", ".."], cwd=build_dir)
+    subprocess.run(["cmake", "..", "-DCMAKE_BUILD_TYPE=RELEASE"], cwd=build_dir)
 
     times = []
     for size in sizes:
@@ -110,7 +110,7 @@ def run_cpp(sizes, wdir):
 def main():
     "Run the benchmarks."
 
-    sizes = [4, 16, 24, 32, 48]
+    sizes = [4, 16, 24, 32]
 
     times = dict()
     with tempfile.TemporaryDirectory() as wdir:

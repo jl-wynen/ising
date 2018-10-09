@@ -17,7 +17,7 @@ BENCHMARK_FILE = Path(__file__).parent/"ising.ben"
 
 # source files
 PYTHON_SRC = Path(__file__).parent/"../python/ising.py"
-CPP_SRC = Path(__file__).parent/"../cpp/ising.cpp"
+CPP_SRC = Path(__file__).parent/"../cpp/base/ising.cpp"
 RUST_SRC = Path(__file__).parent/"../rust/src/main.rs"
 
 

@@ -2,7 +2,7 @@
 *.dat
 
 # C++ binaries
-cpp/build
+cpp/*/build
 
 # Rust files
 Cargo.lock

@@ -1,3 +1,7 @@
+/**
+ * C++ implementation of the 1D Ising Model simulation.
+ */
+
 #include <chrono>
 #include <cmath>
 #include <fstream>

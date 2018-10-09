@@ -67,7 +67,7 @@ struct Rng
     std::mt19937 rng;
     /// Distribution to generator lattice indices.
     std::uniform_int_distribution<Index> indexDist;
-    /// Distribution to generate floating point numbers in [0, 1].
+    /// Distribution to generate floating point numbers in [0, 1).
     std::uniform_real_distribution<double> realDist;
     /// Distribution to generate spins, i.e. values 0 or 1.
     std::uniform_int_distribution<int> spinDist;
@@ -83,7 +83,7 @@ struct Rng
         return indexDist(rng);
     }
 
-    /// Generate a random double in [0, 1].
+    /// Generate a random double in [0, 1).
     double genReal()
     {
         return realDist(rng);
@@ -278,7 +278,7 @@ private:
 /// Evolve a configuration in Monte-Carlo time.
 /**
  * Flips spins at random sites nsweep*NX*NY times and accepting or
- * rejecting the change using the Metropolis-Hastings algroithm.
+ * rejecting the change using the Metropolis-Hastings algorithm.
  * Measures observables every NX*NY steps, i.e. once per sweep.
  *
  * \param cfg Starting configuration.

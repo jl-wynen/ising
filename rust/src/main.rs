@@ -88,7 +88,7 @@ impl Configuration {
         let mut cfg = Configuration{cfg: [0; LATSIZE],
                                     neighbours: make_neighbour_list()};
 
-        for site in &mut cfg.cfg {
+        for site in &mut cfg.cfg.iter_mut() {
             *site = rng.gen_spin();
         }
 
@@ -280,6 +280,6 @@ fn main() {
     }
 
     let duration = start_time.elapsed();
-    println!("Duration in wall clock time: {}", duration.as_secs() as f64
+    println!("Duration in wall clock time: {}s", duration.as_secs() as f64
              + (0.001*duration.subsec_millis() as f64));
 }

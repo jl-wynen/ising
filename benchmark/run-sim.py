@@ -18,6 +18,8 @@ BENCHMARK_FILE = Path(__file__).parent/"ising.ben"
 # source files
 PYTHON_SRC = Path(__file__).parent/"../python/ising.py"
 CPP_SRC = Path(__file__).parent/"../cpp/ising.cpp"
+RUST_SRC = Path(__file__).parent/"../rust/src/main.rs"
+
 
 def run_python(sizes, wdir):
     "Run the Python implementation."
@@ -59,7 +61,7 @@ def run_python(sizes, wdir):
     return times
 
 def run_cpp(sizes, wdir):
-    "Run the C++ implementation/"
+    "Run the C++ implementation."
 
     # regexes to extract and replace stuff
     nxre = re.compile(r"constexpr Index NX = (\d+);.*$")
@@ -107,6 +109,51 @@ def run_cpp(sizes, wdir):
                 break
     return times
 
+def run_rust(sizes, wdir):
+    "Run the Rust implementation."
+
+    # regexes to extract and replace stuff
+    nxre = re.compile(r"const NX: usize = (\d+);.*$")
+    nyre = re.compile(r"const NY: usize = (\d+);.*$")
+    timere = re.compile(r"Duration in wall clock time: ([\d\.]+)s")
+
+    # read source code
+    with open(RUST_SRC, "r") as srcf:
+        src = srcf.read()
+
+    # make backup of source file
+    backup = wdir/"main.rs"
+    shutil.copy(RUST_SRC, backup)
+
+    times = []
+    for size in sizes:
+        # insert size and fix temperature
+        src = "\n".join(re.sub(nxre, f"const NX: usize = {size};",
+                               re.sub(nyre, f"const NY: usize = {size};",
+                                      line.replace("let temperatures = list_temperatures();",
+                                                   "let temperatures = vec!(1.);")))
+                        for line in src.split("\n"))
+        # write source and compile
+        with open(RUST_SRC, "w") as outf:
+            outf.write(src)
+
+        # run the program
+        proc = subprocess.run(["cargo", "run", str(wdir/"data")], cwd=RUST_SRC.parent.parent,
+                              capture_output=True)
+
+        # extract run time
+        for line in proc.stdout.decode("utf-8").split("\n"):
+            match = re.match(timere, line)
+            if match:
+                times.append(float(match[1]))
+                break
+
+    # restore original source
+    shutil.copy(backup, RUST_SRC)
+
+    return times
+
+
 def main():
     "Run the benchmarks."
 
@@ -117,6 +164,7 @@ def main():
         wdir = Path(wdir)
         times["python"] = run_python(sizes, wdir)
         times["c++"] = run_cpp(sizes, wdir)
+        times["rust"] = run_rust(sizes, wdir)
 
     # save benchmark to file
     pickle.dump({"xlabel": "Nx*Ny",

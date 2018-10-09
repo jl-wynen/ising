@@ -4,8 +4,8 @@ All implementations are simple and cover only the basics of the model.
 This is meant to serve as a comparison of different programming languages with respect to ease of use and run efficiency.
 
 ## Model
-The Ising Model is given by the Hamiltonian (assuming no external magnetic field)
-<img src="https://latex.codecogs.com/svg.latex?H(s)&space;=&space;-J&space;\sum_{\langle&space;i,j&space;\rangle}\,&space;s_i&space;s_j" title="H(s) = -J \sum_{\langle i,j \rangle}\, s_i s_j" />
+The Ising Model is given by the Hamiltonian (assuming no external magnetic field)  
+<img src="https://latex.codecogs.com/svg.latex?H(s)&space;=&space;-J&space;\sum_{\langle&space;i,j&space;\rangle}\,&space;s_i&space;s_j" title="H(s) = -J \sum_{\langle i,j \rangle}\, s_i s_j" />  
 where s is a configuration of spins with s_i=+1,-1. The angle brackets denote nearest neighbours.
 
 The programs measure the average magnetisation per spin m = mean(s) and the magnetic susceptibility χ = var(m)/(k_B T).

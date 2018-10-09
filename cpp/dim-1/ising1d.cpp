@@ -110,12 +110,12 @@ struct Configuration
         : n(n), cfg(n, 1) { }
 
     /// Access site.
-    int &operator()(Index const x) noexcept {
+    int &operator()(Index const x) {
         return cfg.at(applyPeriodicBC(x, n));
     }
 
     /// Access site.
-    int const &operator()(Index const x) const noexcept {
+    int const &operator()(Index const x) const {
         return cfg.at(applyPeriodicBC(x, n));
     }
 };
@@ -166,7 +166,7 @@ Configuration randomCfg(Rng &rng, Index const n)
 }
 
 /// Evaluate the Hamiltonian on a configuration.
-int hamiltonian(Configuration const &cfg) noexcept
+int hamiltonian(Configuration const &cfg)
 {
     int energy = 0;
     for (Index idx = 0; idx < cfg.n; ++idx) {
@@ -176,7 +176,7 @@ int hamiltonian(Configuration const &cfg) noexcept
 }
 
 /// Compute the magnetisation on a configuration.
-double magnetisation(Configuration const &cfg) noexcept
+double magnetisation(Configuration const &cfg)
 {
     int magn = 0;
     for (Index idx = 0; idx < cfg.n; ++idx) {
@@ -186,7 +186,7 @@ double magnetisation(Configuration const &cfg) noexcept
 }
 
 /// Compute the change in energy if the spin at site idx were flipped.
-int deltaE(Configuration const &cfg, Index const idx) noexcept
+int deltaE(Configuration const &cfg, Index const idx)
 {
     return 2*cfg(idx) * (cfg(idx+1) + cfg(idx-1));
 }

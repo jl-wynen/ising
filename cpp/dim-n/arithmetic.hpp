@@ -9,6 +9,11 @@ struct ArithmeticType
 {
     using Underlying = T;
 
+    constexpr explicit ArithmeticType()
+        noexcept(std::is_nothrow_default_constructible_v<Underlying>)
+            : value_{}
+    { }
+
     constexpr explicit ArithmeticType(Underlying const &x)
         noexcept(std::is_nothrow_copy_constructible_v<Underlying>)
         : value_{x}

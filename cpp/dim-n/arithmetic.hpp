@@ -87,6 +87,12 @@ constexpr auto operator/(ArithmeticType<T, Tag> const &a, ArithmeticType<T, Tag>
 }
 
 template <typename T, typename Tag>
+constexpr auto operator%(ArithmeticType<T, Tag> const &a, ArithmeticType<T, Tag> const &b)
+{
+    return ArithmeticType<T, Tag>{a.get() % b.get()};
+}
+
+template <typename T, typename Tag>
 constexpr auto &operator++(ArithmeticType<T, Tag> &x)
 {
     ++x.get();

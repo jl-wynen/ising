@@ -89,25 +89,29 @@ constexpr auto operator/(ArithmeticType<T, Tag> const &a, ArithmeticType<T, Tag>
 template <typename T, typename Tag>
 constexpr auto &operator++(ArithmeticType<T, Tag> &x)
 {
-    return ++(x.get());
+    ++x.get();
+    return x;
 }
 
 template <typename T, typename Tag>
 constexpr auto &operator++(ArithmeticType<T, Tag> &x, int)
 {
-    return (x.get())++;
+    decltype(x) c{x.get()++};
+    return c;
 }
 
 template <typename T, typename Tag>
 constexpr auto &operator--(ArithmeticType<T, Tag> &x)
 {
-    return --(x.get());
+    --x.get();
+    return x;
 }
 
 template <typename T, typename Tag>
 constexpr auto &operator--(ArithmeticType<T, Tag> &x, int)
 {
-    return (x.get())--;
+    decltype(x) c{x.get()--};
+    return c;
 }
 
 

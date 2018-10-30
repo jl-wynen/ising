@@ -42,20 +42,6 @@ struct Configuration
         return cfg_[idx.get()];
     }
 
-    /// Access site by individual indices.
-    template <typename ...Idxs>
-    Spin &operator()(Idxs const ...idxs) noexcept(ndebug)
-    {
-        return (*this)[totalIdx(idxs...)];
-    }
-
-    /// Access site by individual indices.
-    template <typename ...Idxs>
-    Spin const &operator()(Idxs const ...idxs) const noexcept(ndebug)
-    {
-        return (*this)[totalIdx(idxs...)];
-    }
-
     /// Return iterator to beginning of config.
     friend auto begin(Configuration &cfg)
     {

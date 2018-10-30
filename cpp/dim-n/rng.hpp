@@ -48,7 +48,7 @@ private:
 
 
 /// Generate a random spin configuration.
-Configuration randomCfg(Rng &rng)
+inline Configuration randomCfg(Rng &rng)
 {
     Configuration cfg;
     for (Spin &s : cfg) {

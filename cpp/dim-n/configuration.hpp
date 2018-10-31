@@ -66,6 +66,11 @@ struct Configuration
         return cfg.cfg_.end();
     }
 
+    void flip(Index const idx) noexcept(ndebug)
+    {
+        (*this)[idx] = (*this)[idx] * Spin(-1);
+    }
+
 private:
     /// The actual configuration.
     std::vector<Spin> cfg_;

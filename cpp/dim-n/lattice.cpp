@@ -4,6 +4,7 @@
 
 #include "ndebug.hpp"
 
+
 namespace detail_
 {
     namespace
@@ -12,10 +13,13 @@ namespace detail_
         void increment(std::array<Index, NDIM.get()> &index)
         {
             for (Index i = 0_i; i < NDIM; ++i) {
+                // go through in inverse order to get row-major layout
+                Index const j = NDIM-1_i-i;
+
                 // try to increment at position i
-                if (++index[i.get()] == LATSHAPE[i.get()]) {
+                if (++index[j.get()] == LATSHAPE[j.get()]) {
                     // back off, increment was too much
-                    index[i.get()] = 0_i;
+                    index[j.get()] = 0_i;
                 }
                 else {
                     // it is fine, keep the index
@@ -77,8 +81,8 @@ namespace detail_
 
         for (Index i = 0_i; i < LATSIZE; ++i) {
             for (Index d = 0_i; d < NDIM; ++d) {
-                neighbours[(2_i*NDIM*i + d).get()] = totalIndex(incrementedAt(index, d));
-                neighbours[(2_i*NDIM*i + d+1_i).get()] = totalIndex(decrementedAt(index, d));
+                neighbours[(2_i*NDIM*i + 2_i*d).get()] = totalIndex(incrementedAt(index, d));
+                neighbours[(2_i*NDIM*i + 2_i*d+1_i).get()] = totalIndex(decrementedAt(index, d));
             }
 
             increment(index);

@@ -9,7 +9,7 @@
 /// Number of dimensions.
 constexpr Index NDIM{2};
 /// Shape of the lattice, NDIM numbers.
-constexpr std::array<Index, NDIM.get()> LATSHAPE{Index{4ul},
+constexpr std::array<Index, NDIM.get()> LATSHAPE{Index{3ul},
                                                  Index{3ul}};
 
 /// Total lattice size.
@@ -21,6 +21,16 @@ constexpr Index LATSIZE = [](auto &shape) {
                               return size;
                           }(LATSHAPE);
 
+/// Compute the flat index from a set of NDIM indices.
+inline Index totalIndex(std::array<Index, NDIM.get()> const &index)
+{
+    Index total{index[0]};
+    for (Index i = 1_i; i < NDIM; ++i) {
+        total = total*LATSHAPE[i.get()] + index[i.get()];
+    }
+    return total;
+}
+
 namespace detail_ {
     /// Build the neighbour index list.
     std::vector<Index> makeNeighbourList();
@@ -29,6 +39,7 @@ namespace detail_ {
 /// Return the list of neares neighbour indices.
 inline std::vector<Index> const &neighbourList()
 {
+    // TODO global variable to avoid static initialisation overhead?
     static std::vector<Index> neighbours{detail_::makeNeighbourList()};
     return neighbours;
 }

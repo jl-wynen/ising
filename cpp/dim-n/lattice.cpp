@@ -67,16 +67,6 @@ namespace detail_
             }
             return decremented;
         }
-
-        /// Compute the flat index from a set of NDIM indices.
-        Index totalIndex(std::array<Index, NDIM.get()> const &index)
-        {
-            Index total{index[0]};
-            for (Index i = 1_i; i < NDIM; ++i) {
-                total = total*LATSHAPE[i.get()] + index[i.get()];
-            }
-            return total;
-        }
     }
 
     std::vector<Index> makeNeighbourList()

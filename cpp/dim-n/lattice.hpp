@@ -36,12 +36,7 @@ namespace detail_ {
     std::vector<Index> makeNeighbourList();
 }
 
-/// Return the list of neares neighbour indices.
-inline std::vector<Index> const &neighbourList()
-{
-    // TODO global variable to avoid static initialisation overhead?
-    static std::vector<Index> neighbours{detail_::makeNeighbourList()};
-    return neighbours;
-}
+/// The list of nearest neighbour indices.
+extern std::vector<Index> const neighbourList;
 
 #endif  // ndef ISING_LATTICE_HPP

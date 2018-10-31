@@ -91,3 +91,6 @@ namespace detail_
         return neighbours;
     }
 }
+
+// init neighbour list
+std::vector<Index> const neighbourList = detail_::makeNeighbourList();

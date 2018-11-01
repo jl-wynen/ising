@@ -33,6 +33,12 @@ struct Rng
         return spinDist(rng)==0 ? Spin{-1} : Spin{1};
     }
 
+    /// Change the lattice size used to generate indices.
+    void setLattize(Index const latsize)
+    {
+        indexDist = std::uniform_int_distribution<typename Index::Underlying>{0, latsize.get()-1};
+    }
+
 private:
     /// The generator.
     std::mt19937 rng;

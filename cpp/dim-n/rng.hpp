@@ -12,7 +12,11 @@ struct Rng
     /// Seed the rng and set up distributions.
     explicit Rng(Index const latsize,
                  unsigned long const seed)
-        : rng{seed}, indexDist{0, latsize.get()-1}, realDist{0, 1}, spinDist{0, 1}
+        // result_type differs between implementations, make sure it always compiles
+        : rng{static_cast<decltype(rng)::result_type>(seed)},
+          indexDist{0, latsize.get()-1},
+          realDist{0, 1},
+          spinDist{0, 1}
     { }
 
     /// Generate a random index into a configuration.

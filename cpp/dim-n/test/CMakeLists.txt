@@ -1,6 +1,7 @@
 set(TEST_SOURCE
   lattice.cpp
   rng.cpp
+  ising.cpp
   test.cpp)
 
 add_executable(ising-test EXCLUDE_FROM_ALL ${TEST_SOURCE} ${BASE_SOURCE})

@@ -5,7 +5,6 @@
 
 namespace
 {
-    // TODO is there a std lib function for this?
     Index latticeSize(std::vector<Index> const &shape)
     {
         Index size{1};

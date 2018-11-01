@@ -38,7 +38,7 @@ struct Rng
     }
 
     /// Change the lattice size used to generate indices.
-    void setLattize(Index const latsize)
+    void setLatsize(Index const latsize)
     {
         indexDist = std::uniform_int_distribution<typename Index::Underlying>{0, latsize.get()-1};
     }

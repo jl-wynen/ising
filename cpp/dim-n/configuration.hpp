@@ -13,8 +13,9 @@ using Spin = ArithmeticType<int, struct SpinTag>;
 struct Configuration
 {
     /// Initialise with a given initial spin.
-    Configuration(Spin const &initial=Spin{+1})
-        : cfg_(LATSIZE.get(), initial)
+    Configuration(Index const size,
+                  Spin const &initial=Spin{+1})
+        : cfg_(size.get(), initial)
     {
         if constexpr (not ndebug) {
             if (initial != Spin{+1} and initial != Spin{-1})
@@ -26,7 +27,7 @@ struct Configuration
     Spin &operator[](Index const idx) noexcept(ndebug)
     {
         if constexpr (not ndebug) {
-            if (idx >= LATSIZE)  // Index is unsigned => this checks also for 'idx < 0'.
+            if (idx.get() >= std::size(cfg_))  // Index is unsigned => this checks for 'idx < 0' too.
                 throw std::out_of_range("Configuration index is out of range.");
         }
         return cfg_[idx.get()];
@@ -36,10 +37,16 @@ struct Configuration
     Spin const &operator[](Index const idx) const noexcept(ndebug)
     {
         if constexpr (not ndebug) {
-            if (idx >= LATSIZE)  // Index is unsigned => this checks also for 'idx < 0'.
+            if (idx.get() >= std::size(cfg_))  // Index is unsigned => this checks for 'idx < 0' too.
                 throw std::out_of_range("Configuration index is out of range.");
         }
         return cfg_[idx.get()];
+    }
+
+    /// Return the size of this configuration.
+    Index size() const noexcept
+    {
+        return Index{cfg_.size()};
     }
 
     /// Return iterator to beginning of config.
@@ -75,5 +82,12 @@ private:
     /// The actual configuration.
     std::vector<Spin> cfg_;
 };
+
+
+/// Return the size of a configuration.
+inline Index size(Configuration const &cfg) noexcept
+{
+    return cfg.size();
+}
 
 #endif  // ndef ISING_CONFIGURATION_HPP

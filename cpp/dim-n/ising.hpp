@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include "configuration.hpp"
+#include "lattice.hpp"
 
 
 /*
@@ -23,27 +24,29 @@ struct Parameters
 
 /// Sum spins of all neighbours of a given site.
 inline Spin sumOfNeighbours(Configuration const &cfg,
-                            Index const site) noexcept(ndebug)
+                            Index const site,
+                            Lattice const &lat) noexcept(ndebug)
 {
     Spin neighbourSum{0};
-    for (Index const *n = &neighbourList[(2_i*NDIM*site).get()];
-         n < &neighbourList[(2_i*NDIM*(site)).get()]+2*NDIM.get();
-         ++n)
+    for (auto [it, end] = lat.neighbours(site);
+         it != end;
+         ++it)
     {
-        neighbourSum = neighbourSum + cfg[*n];
+        neighbourSum = neighbourSum + cfg[*it];
     }
     return neighbourSum;
 }
 
 /// Evaluate the Hamiltonian on a configuration.
 inline double hamiltonian(Configuration const &cfg,
-                          Parameters const &params) noexcept(ndebug)
+                          Parameters const &params,
+                          Lattice const &lat) noexcept(ndebug)
 {
     Spin coupling{0};  // the nearest-neighbour coupling
     Spin magn{0};  // the sum over all sites
 
-    for (Index i = 0_i; i < LATSIZE; ++i) {
-        coupling = coupling + cfg[i]*sumOfNeighbours(cfg, i);
+    for (Index i = 0_i; i < size(lat); ++i) {
+        coupling = coupling + cfg[i]*sumOfNeighbours(cfg, i, lat);
         magn = magn + cfg[i];
     }
 
@@ -53,9 +56,10 @@ inline double hamiltonian(Configuration const &cfg,
 
 /// Compute the change in energy if the spin at site idx were flipped.
 inline double deltaE(Configuration const &cfg, Index const site,
-                     Parameters const &params) noexcept(ndebug)
+                     Parameters const &params,
+                     Lattice const &lat) noexcept(ndebug)
 {
-    return 2.0*cfg[site].get()*(params.JT*sumOfNeighbours(cfg, site).get()
+    return 2.0*cfg[site].get()*(params.JT*sumOfNeighbours(cfg, site, lat).get()
                                 + params.hT);
 }
 
@@ -63,7 +67,7 @@ inline double deltaE(Configuration const &cfg, Index const site,
 inline double magnetisation(Configuration const &cfg) noexcept(ndebug)
 {
     return std::accumulate(begin(cfg), end(cfg), Spin{0}).get() /
-        static_cast<double>(LATSIZE.get());
+        static_cast<double>(size(cfg).get());
 }
 
 #endif  // ndef ISING_ISING_HPP

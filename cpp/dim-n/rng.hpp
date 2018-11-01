@@ -10,8 +10,9 @@
 struct Rng
 {
     /// Seed the rng and set up distributions.
-    explicit Rng(unsigned long const seed)
-        : rng{seed}, indexDist{0, LATSIZE.get()-1}, realDist{0, 1}, spinDist{0, 1}
+    explicit Rng(Index const latsize,
+                 unsigned long const seed)
+        : rng{seed}, indexDist{0, latsize.get()-1}, realDist{0, 1}, spinDist{0, 1}
     { }
 
     /// Generate a random index into a configuration.
@@ -48,9 +49,9 @@ private:
 
 
 /// Generate a random spin configuration.
-inline Configuration randomCfg(Rng &rng)
+inline Configuration randomCfg(Index const latsize, Rng &rng)
 {
-    Configuration cfg;
+    Configuration cfg(latsize);
     for (Spin &s : cfg) {
         s = rng.genSpin();
     }

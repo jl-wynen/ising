@@ -58,3 +58,32 @@ TEST_CASE("Hamiltonian", "[Ising]")
         }
     }
 }
+
+TEST_CASE("Delta E", "[Ising]")
+{
+    std::vector<std::vector<Index>> const shapes{
+        {3_i, 3_i},
+        {32_i, 16_i},
+        {8_i, 4_i, 8_i, 5_i}
+    };
+    Rng rng(1_i, 6274);
+
+    SECTION("Delta E gives the same result as difference of hamiltonian")
+    {
+        Parameters params{-1.1, 2.3};
+
+        for (auto const &shape : shapes) {
+            Lattice const lat{shape};
+            rng.setLatsize(size(lat));
+            Configuration cfg = randomCfg(size(lat), rng);
+            double const energy = hamiltonian(cfg, params, lat);
+
+            for (Index site = 0_i; site < size(cfg); ++site) {
+                cfg.flip(site);
+                double const flippedEnergy = hamiltonian(cfg, params, lat);
+                cfg.flip(site);
+                REQUIRE(deltaE(cfg, site, params, lat) == Approx(flippedEnergy-energy));
+            }
+        }
+    }
+}

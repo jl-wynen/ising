@@ -4,6 +4,7 @@ project(ising CXX)
 
 # all sources except main
 set(SOURCE
+  montecarlo.cpp
   lattice.cpp)
 
 # store sources for test

@@ -1,22 +1,11 @@
 #include "rng.hpp"
 
-#include <algorithm>
-
 #include "catch.hpp"
+#include "util.hpp"
 
 using IVec = std::vector<Index>;
 
 namespace {
-    /// Create and return a vector of n elements produced using generator.
-    template <typename Gen>
-    auto produce(Gen generator, size_t const n)
-    {
-        using std::begin, std::end;
-
-        std::vector<decltype(generator())> values(n);
-        std::generate(begin(values), end(values), generator);
-        return values;
-    }
 
     /// Produce n values using generator and check that all satify predicate.
     template <typename Gen, typename Pred>

@@ -4,7 +4,7 @@
 
 using std::exp;
 
-std::tuple<Configuration, double, size_t>
+std::tuple<Configuration, double, double>
 evolve(Configuration cfg, double energy, Parameters const& params,
             Lattice const &lat, Rng &rng, size_t const nsweep, Observables * const obs)
 {
@@ -35,5 +35,5 @@ evolve(Configuration cfg, double energy, Parameters const& params,
         }
     }
 
-    return std::make_tuple(std::move(cfg), energy, naccept);
+    return std::make_tuple(std::move(cfg), energy, static_cast<double>(naccept)/nsweep/size(lat).get());
 }

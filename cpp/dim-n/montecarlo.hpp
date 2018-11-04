@@ -16,7 +16,7 @@ struct Observables
 };
 
 
-std::tuple<Configuration, double, size_t>
+std::tuple<Configuration, double, double>
 evolve(Configuration cfg, double energy, Parameters const& params,
        Lattice const &lat, Rng &rng, size_t const nsweep, Observables * const obs);
 

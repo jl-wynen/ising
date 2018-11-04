@@ -24,6 +24,21 @@ namespace {
 
         return std::make_tuple(std::move(J), std::move(h));
     }
+
+    /// Make sure that size(vec) == 1 or desired, broadcast to desired iff 1.
+    template <typename T>
+    void checkSizeAndBroadcast(std::vector<T> &vec, std::size_t const desired)
+    {
+        if (std::size(vec) > 1) {
+            if (std::size(vec) != desired) {
+                throw std::invalid_argument("Inconsistent lengths in sequences in input");
+            }
+            return;  // sizes match, nothing to be done
+        }
+
+        // broadcast
+        vec.resize(desired, vec.front());
+    }
 }
 
 std::vector<Parameters> loadParams(YAML::Node const &node)
@@ -60,6 +75,9 @@ namespace YAML {
         pc.nthermInit = mcNode["ntherm_init"].as<size_t>();
         pc.ntherm = loadVector<size_t>(mcNode["ntherm"]);
         pc.nprod = loadVector<size_t>(mcNode["nprod"]);
+
+        checkSizeAndBroadcast(pc.ntherm, std::size(pc.params));
+        checkSizeAndBroadcast(pc.nprod, std::size(pc.params));
 
         return true;
     }

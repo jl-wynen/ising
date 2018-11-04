@@ -2,12 +2,18 @@
 
 #include <random>
 #include <string>
+#include <filesystem>
 
 #include "catch.hpp"
 #include "util.hpp"
 
+namespace fs = std::filesystem;
+
+
+#define STRINGIFY_IMPL(str) #str
+#define STRINGIFY(str) STRINGIFY_IMPL(str)
+
 namespace {
-    // TODO use YAML to output
     template <typename T>
     std::string writeVector(std::vector<T> const &vec)
     {
@@ -176,5 +182,48 @@ TEST_CASE("Loading Parameters from YAML", "[YAML]")
                 }
             }
         }
+    }
+}
+
+TEST_CASE("Loading ProgConfig from YAML", "[YAML]")
+{
+    fs::path const inputDir = fs::path{STRINGIFY(ISLE_TEST_DIR)}/"input";
+
+    SECTION("File validInput0.yml") {
+        YAML::Node node = YAML::LoadFile(inputDir/"validInput0.yml");
+        ProgConfig const pc = node.as<ProgConfig>();
+
+        REQUIRE(pc.latticeShape == std::vector<Index>{3_i, 3_i});
+        REQUIRE(pc.rngSeed == 537);
+        REQUIRE(pc.params[0] == Parameters{1.0, 0.5});
+        REQUIRE(pc.params[1] == Parameters{1.0, 0.7});
+        REQUIRE(pc.params[2] == Parameters{1.0, 0.1});
+        REQUIRE(pc.nthermInit == 100);
+        REQUIRE(pc.ntherm == std::vector<size_t>{100, 100, 100});
+        REQUIRE(pc.nprod == std::vector<size_t>{1000, 1000, 1000});
+    }
+
+    SECTION("File validInput1.yml") {
+        YAML::Node node = YAML::LoadFile(inputDir/"validInput1.yml");
+        ProgConfig const pc = node.as<ProgConfig>();
+
+        REQUIRE(pc.latticeShape == std::vector<Index>{5_i, 3_i, 7_i});
+        REQUIRE(pc.rngSeed == 123);
+        REQUIRE(pc.params[0] == Parameters{1.0, 0.1});
+        REQUIRE(pc.params[1] == Parameters{2.0, 0.1});
+        REQUIRE(pc.params[2] == Parameters{3.0, 0.1});
+        REQUIRE(pc.nthermInit == 100);
+        REQUIRE(pc.ntherm == std::vector<size_t>{100, 200, 300});
+        REQUIRE(pc.nprod == std::vector<size_t>{1000, 2000, 3000});
+    }
+
+    SECTION("File invalidInput0.yml") {
+        YAML::Node node = YAML::LoadFile(inputDir/"invalidInput0.yml");
+        REQUIRE_THROWS_AS(node.as<ProgConfig>(), std::invalid_argument);
+    }
+
+    SECTION("File invalidInput1.yml") {
+        YAML::Node node = YAML::LoadFile(inputDir/"invalidInput1.yml");
+        REQUIRE_THROWS_AS(node.as<ProgConfig>(), std::invalid_argument);
     }
 }

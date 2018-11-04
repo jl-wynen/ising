@@ -6,6 +6,37 @@
 #include <yaml-cpp/yaml.h>
 
 #include "ising.hpp"
+#include "index.hpp"
+
+
+/// Program configuration as read from input file.
+struct ProgConfig
+{
+    std::vector<Index> latticeShape;
+    unsigned long rngSeed;
+    std::vector<Parameters> params;
+    size_t nthermInit;
+    std::vector<size_t> ntherm;
+    std::vector<size_t> nprod;
+};
+
+
+namespace YAML {
+    /// Allow reading of Indices from YAML.
+    template <>
+    struct convert<Index>
+    {
+        static bool decode(Node const &node, Index &idx);
+    };
+
+    /// Allow reading of program configurations from YAML.
+    template <>
+    struct convert<ProgConfig>
+    {
+        static bool decode(Node const &node, ProgConfig &pc);
+    };
+}
+
 
 /// Load a vector from a YAML sequence or scalar node.
 template <typename T>

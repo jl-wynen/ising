@@ -35,3 +35,32 @@ std::vector<Parameters> loadParams(YAML::Node const &node)
     }
     return params;
 }
+
+namespace YAML {
+    bool convert<Index>::decode(Node const &node, Index &idx)
+    {
+        if (not node.IsScalar()) {
+            return false;
+        }
+        idx = Index{node.as<typename Index::Underlying>()};
+        return true;
+    }
+
+    bool convert<ProgConfig>::decode(Node const &node, ProgConfig &pc)
+    {
+        if (not node.IsMap()) {
+            return false;
+        }
+
+        pc.latticeShape = node["Lattice"]["shape"].as<std::vector<Index>>();
+        pc.rngSeed = node["RNG"]["seed"].as<unsigned long>();
+        pc.params = loadParams(node["Parameters"]);
+
+        auto const &mcNode = node["MC"];
+        pc.nthermInit = mcNode["ntherm_init"].as<size_t>();
+        pc.ntherm = loadVector<size_t>(mcNode["ntherm"]);
+        pc.nprod = loadVector<size_t>(mcNode["nprod"]);
+
+        return true;
+    }
+}

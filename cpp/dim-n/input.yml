@@ -1,0 +1,14 @@
+Lattice:
+  shape: [16, 16]
+
+RNG:
+  seed: 537
+
+Parameters:
+  J: [0.2]
+  h: [-2.0, -1.0, 0.0, 1.0, 2.0]
+
+MC:
+  ntherm_init: 1000
+  ntherm: 1000
+  nprod: 10000

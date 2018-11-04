@@ -19,7 +19,7 @@ evolve(Configuration cfg, double energy, Parameters const& params,
             // Metropolis-Hastings accept-reject
             // The first check is not necessary for this to be correct but avoids
             // evaluating the costly exponential and RNG.
-            if (delta <= 0 or exp(delta) > rng.genReal()) {
+            if (delta <= 0 or exp(-delta) > rng.genReal()) {
                 // accept change
                 cfg.flip(site);
                 energy += delta;

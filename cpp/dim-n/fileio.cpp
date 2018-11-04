@@ -1,5 +1,10 @@
 #include "fileio.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+
 namespace {
     /// Load parameters as individual arrays.
     auto loadParamsIndividual(YAML::Node const &node)
@@ -39,16 +44,31 @@ namespace {
         // broadcast
         vec.resize(desired, vec.front());
     }
-}
 
-std::vector<Parameters> loadParams(YAML::Node const &node)
-{
-    std::vector<Parameters> params;
-    auto const [J, h] = loadParamsIndividual(node);
-    for (size_t i = 0; i < std::size(J); ++i) {
-        params.emplace_back(Parameters{J[i], h[i]});
+    /// Return the output file name for given ensemble number.
+    fs::path outFname(size_t const ensemble)
+    {
+        std::ostringstream oss;
+        oss << std::setfill('0') << std::setw(4) << ensemble << ".dat";
+        return {oss.str()};
     }
-    return params;
+
+    /// Output a vector of arbitrary elements.
+    template <typename T>
+    std::ostream &operator<<(std::ostream &os, std::vector<T> const &vec)
+    {
+        for (size_t i = 0; i < std::size(vec)-1; ++i) {
+            os << vec[i] << ", ";
+        }
+        os << vec.back();
+        return os;
+    }
+
+    /// Output and Index.
+    std::ostream &operator<<(std::ostream &os, Index const idx)
+    {
+        return (os << idx.get());
+    }
 }
 
 namespace YAML {
@@ -81,4 +101,37 @@ namespace YAML {
 
         return true;
     }
+}
+
+std::vector<Parameters> loadParams(YAML::Node const &node)
+{
+    std::vector<Parameters> params;
+    auto const [J, h] = loadParamsIndividual(node);
+    for (size_t i = 0; i < std::size(J); ++i) {
+        params.emplace_back(Parameters{J[i], h[i]});
+    }
+    return params;
+}
+
+void prepareOutdir(fs::path const &outdir)
+{
+    if (fs::exists(outdir)) {
+        std::cerr << "Output directory " << outdir << " exists, deleting!\n";
+        fs::remove_all(outdir);
+    }
+    fs::create_directory(outdir);
+}
+
+void write(fs::path const &outdir, size_t const ensemble,
+           Observables const &obs, Parameters const &params,
+           Lattice const &lat)
+{
+    std::ofstream ofs;
+    ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    ofs.open(outdir/outFname(ensemble), std::ios::trunc);
+
+    ofs << "# J=" << params.JT << " h=" << params.hT
+        << " shape=[" << lat.shape() << "]\n"
+        << obs.energy << '\n'
+        << obs.magnetisation << '\n';
 }

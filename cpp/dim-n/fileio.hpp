@@ -2,11 +2,15 @@
 #define ISLE_FILEIO_HPP
 
 #include <vector>
+#include <filesystem>
 
 #include <yaml-cpp/yaml.h>
 
 #include "ising.hpp"
+#include "montecarlo.hpp"
 #include "index.hpp"
+
+namespace fs = std::filesystem;
 
 
 /// Program configuration as read from input file.
@@ -59,5 +63,17 @@ std::vector<T> loadVector(YAML::Node const &node)
 
 /// Load parameters from YAML.
 std::vector<Parameters> loadParams(YAML::Node const &node);
+
+
+/// Create the output data directory.
+/**
+ * Deletes the directory and all its contents if it exists.
+ */
+void prepareOutdir(fs::path const &outdir);
+
+/// Write observables to a data file.
+void write(fs::path const &outdir, size_t ensemble,
+           Observables const &obs, Parameters const &params,
+           Lattice const &lat);
 
 #endif  // nde ISLE_FILEIO_HPP

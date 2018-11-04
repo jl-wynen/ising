@@ -14,9 +14,7 @@ std::vector<T> loadVector(YAML::Node const &node)
     std::vector<T> values;
 
     if (node.IsSequence()) {
-        for (auto const &n : node) {
-            values.emplace_back(n.as<T>());
-        }
+        values = node.as<std::vector<T>>();
     }
     else if (node.IsScalar()) {
         values.emplace_back(node.as<T>());

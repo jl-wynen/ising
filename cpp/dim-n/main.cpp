@@ -3,12 +3,8 @@
  */
 
 #include <chrono>
-#include <filesystem>
 #include <iomanip>
 #include <iostream>
-#include <cassert>
-
-namespace fs = std::filesystem;
 
 #include <yaml-cpp/yaml.h>
 
@@ -18,6 +14,10 @@ namespace fs = std::filesystem;
 #include "ising.hpp"
 #include "montecarlo.hpp"
 #include "fileio.hpp"
+
+using Clock = std::chrono::steady_clock;
+using Milliseconds = std::chrono::milliseconds;
+
 
 /// Parse command line arguments.
 auto parseArgs(int const argc, char const * const argv[])
@@ -46,10 +46,14 @@ int main(int const argc, char const * const argv[])
     double accRate;
 
     // initial thermalisation
+    auto startTime = Clock::now();
     std::tie(cfg, energy, accRate) = evolve(cfg, energy, input.params.at(0), lat,
                                             rng, input.nthermInit, nullptr);
+    auto endTime = Clock::now();
     std::cout << "Initial thermalisation acceptance rate: " << std::setprecision(4)
-              << accRate << '\n';
+              << accRate << '\n'
+              << "Run time: " << std::chrono::duration_cast<Milliseconds>(endTime-startTime).count()
+              << "ms\n";
 
     for (size_t i = 0; i < std::size(input.params); ++i) {
         auto const params = input.params.at(i);
@@ -59,6 +63,7 @@ int main(int const argc, char const * const argv[])
         std::cout << "Running with {J/kT = " << params.JT << ", h/kT = " << params.hT << "}\n";
 
         // (re-)thermalise
+        startTime = Clock::now();
         std::tie(cfg, energy, accRate) = evolve(cfg, energy, params, lat, rng, ntherm, nullptr);
         std::cout << "  Thermalisation acceptance rate: " << std::setprecision(4)
                   << accRate << '\n';
@@ -66,8 +71,11 @@ int main(int const argc, char const * const argv[])
         // measure
         Observables obs;
         std::tie(cfg, energy, accRate) = evolve(cfg, energy, params, lat, rng, nprod, &obs);
+        endTime = Clock::now();
         std::cout << "  Production acceptance rate: " << std::setprecision(4)
-                  << accRate << '\n';
+                  << accRate << '\n'
+                  << "  Run time: " << std::chrono::duration_cast<Milliseconds>(endTime-startTime).count()
+                  << "ms\n";
 
         write(outdir, i, obs, params, lat);
     }

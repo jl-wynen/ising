@@ -2,11 +2,12 @@
 *.dat
 
 # C++ binaries
-cpp/*/build
+comparison/cpp/build
+n-dimensional/build
 
 # Rust files
 Cargo.lock
-rust/target
+comparison/rust/target
 
 # benchmarks
 *.ben

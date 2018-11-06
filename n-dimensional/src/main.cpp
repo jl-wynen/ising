@@ -58,7 +58,7 @@ int main(int const argc, char const * const argv[])
     for (size_t i = 0; i < std::size(input.params); ++i) {
         auto const params = input.params.at(i);
         auto const ntherm = input.ntherm.at(i);
-        auto const nprod = input.ntherm.at(i);
+        auto const nprod = input.nprod.at(i);
 
         std::vector<Measurement> meas;
         if (input.writeCfg) {

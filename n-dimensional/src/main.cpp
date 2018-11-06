@@ -60,17 +60,28 @@ int main(int const argc, char const * const argv[])
         auto const ntherm = input.ntherm.at(i);
         auto const nprod = input.ntherm.at(i);
 
-        std::cout << "Running with {J/kT = " << params.JT << ", h/kT = " << params.hT << "}\n";
+        std::vector<Measurement> meas;
+        if (input.writeCfg) {
+            meas.emplace_back([&](Configuration const &cfg, double const)
+                              {
+                                  write(outdir, i, cfg, params, lat);
+                              });
+        }
+
+        std::cout << "Running with {J/kT = " << params.JT
+                  << ", h/kT = " << params.hT << "}\n";
 
         // (re-)thermalise
         startTime = Clock::now();
-        std::tie(cfg, energy, accRate) = evolve(cfg, energy, params, lat, rng, ntherm, nullptr);
+        std::tie(cfg, energy, accRate) = evolve(cfg, energy, params,
+                                                lat, rng, ntherm, nullptr);
         std::cout << "  Thermalisation acceptance rate: " << std::setprecision(4)
                   << accRate << '\n';
 
         // measure
         Observables obs;
-        std::tie(cfg, energy, accRate) = evolve(cfg, energy, params, lat, rng, nprod, &obs);
+        std::tie(cfg, energy, accRate) = evolve(cfg, energy, params,
+                                                lat, rng, nprod, &obs, meas);
         endTime = Clock::now();
         std::cout << "  Production acceptance rate: " << std::setprecision(4)
                   << accRate << '\n'

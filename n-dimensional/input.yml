@@ -13,4 +13,4 @@ MC:
   ntherm: 1000
   nprod: 10000
 
-write_cfg: true
+write_cfg: false

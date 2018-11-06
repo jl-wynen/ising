@@ -9,6 +9,9 @@ n-dimensional/build
 Cargo.lock
 comparison/rust/target
 
+# Python binaries / caches
+__pycache__
+
 # benchmarks
 *.ben
 

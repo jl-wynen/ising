@@ -76,4 +76,12 @@ void write(fs::path const &outdir, size_t ensemble,
            Observables const &obs, Parameters const &params,
            Lattice const &lat);
 
+/// Write a configuration to a file.
+/**
+ * Appends the config if the file already exists.
+ */
+void write(fs::path const &outdir, size_t ensemble,
+           Configuration const &cfg,
+           Parameters const &params, Lattice const &lat);
+
 #endif  // nde ISLE_FILEIO_HPP

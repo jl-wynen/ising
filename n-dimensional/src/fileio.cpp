@@ -46,10 +46,10 @@ namespace {
     }
 
     /// Return the output file name for given ensemble number.
-    fs::path outFname(size_t const ensemble)
+    fs::path outFname(size_t const ensemble, char const extension[]=".dat")
     {
         std::ostringstream oss;
-        oss << std::setfill('0') << std::setw(4) << ensemble << ".dat";
+        oss << std::setfill('0') << std::setw(4) << ensemble << extension;
         return {oss.str()};
     }
 
@@ -64,10 +64,29 @@ namespace {
         return os;
     }
 
-    /// Output and Index.
+    /// Output an Index.
     std::ostream &operator<<(std::ostream &os, Index const idx)
     {
         return (os << idx.get());
+    }
+
+    /// Write ensemble metadata to given file.
+    std::ofstream writeMetadata(std::ofstream &ofs, Parameters const &params,
+                                Lattice const &lat)
+    {
+        ofs << "# J=" << params.JT << " h=" << params.hT
+            << " shape=[" << lat.shape() << "]\n";
+        return std::move(ofs);
+    }
+
+    /// Write ensemble metadata to a new file.
+    std::ofstream writeMetadata(fs::path const &fname, Parameters const &params,
+                                Lattice const &lat)
+    {
+        std::ofstream ofs;
+        ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        ofs.open(fname, std::ios::trunc);
+        return writeMetadata(ofs, params, lat);
     }
 }
 
@@ -126,12 +145,27 @@ void write(fs::path const &outdir, size_t const ensemble,
            Observables const &obs, Parameters const &params,
            Lattice const &lat)
 {
-    std::ofstream ofs;
-    ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    ofs.open(outdir/outFname(ensemble), std::ios::trunc);
-
-    ofs << "# J=" << params.JT << " h=" << params.hT
-        << " shape=[" << lat.shape() << "]\n"
-        << obs.energy << '\n'
+    auto ofs = writeMetadata(outdir/outFname(ensemble), params, lat);
+    ofs << obs.energy << '\n'
         << obs.magnetisation << '\n';
+}
+
+void write(fs::path const &outdir, size_t const ensemble,
+           Configuration const &cfg,
+           Parameters const &params, Lattice const &lat)
+{
+    fs::path const outfile = outdir/outFname(ensemble, ".cfg");
+    std::ofstream ofs;
+    if (not fs::exists(outfile)) {
+        ofs = writeMetadata(outfile, params, lat);
+    }
+    else {
+        ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        ofs.open(outfile, std::ios::app);
+    }
+
+    for (Index i = 0_i; i < size(cfg)-1_i; ++i) {
+        ofs << cfg[i].get() << ", ";
+    }
+    ofs << cfg[size(cfg)-1_i].get() << '\n';
 }

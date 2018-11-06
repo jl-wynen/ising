@@ -7,6 +7,7 @@ where ensemble number is optional and defaults to 0.
 
 import sys
 from pathlib import Path
+from functools import reduce
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,10 +24,11 @@ def main():
     datadir = Path(sys.argv[1])
     ensemble = int(sys.argv[2]) if len(sys.argv) == 3 else 0
 
+
     # load data
     meta, cfgs = loadFile(datadir/f"{ensemble:04d}.cfg")
     _, data = loadFile(datadir/f"{ensemble:04d}.dat")
-    energy = data[0]
+    energy = data[0]/reduce(lambda x, y: x*y, meta.shape, 1)
     magn = data[1]
 
     nframes = cfgs.shape[0]
@@ -46,7 +48,7 @@ def main():
     epoints, = axe.plot(np.arange(nframes), energy, c="C0")
     epoints.set_data([], [])
     axe.set_xlabel(r"$N_\mathrm{tr}$")
-    axe.set_ylabel(r"$H(s)$")
+    axe.set_ylabel(r"$H(s) / L^2$")
 
     # create plot for magnetisation
     axm = fig.add_subplot(gspec[1, 2])

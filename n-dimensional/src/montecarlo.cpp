@@ -6,7 +6,8 @@ using std::exp;
 
 std::tuple<Configuration, double, double>
 evolve(Configuration cfg, double energy, Parameters const& params,
-            Lattice const &lat, Rng &rng, size_t const nsweep, Observables * const obs)
+       Lattice const &lat, Rng &rng, size_t const nsweep,
+       Observables * const obs, std::vector<Measurement> const & extraMeas)
 {
     size_t naccept = 0;  // running number of accepted spin flips
 
@@ -32,6 +33,11 @@ evolve(Configuration cfg, double energy, Parameters const& params,
         if (obs) {
             obs->energy.emplace_back(energy);
             obs->magnetisation.emplace_back(magnetisation(cfg));
+        }
+
+        // perform extra measurements
+        for (auto const &meas : extraMeas) {
+            meas(cfg, energy);
         }
     }
 

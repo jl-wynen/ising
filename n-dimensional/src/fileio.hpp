@@ -22,6 +22,7 @@ struct ProgConfig
     size_t nthermInit;
     std::vector<size_t> ntherm;
     std::vector<size_t> nprod;
+    bool writeCfg;
 };
 
 

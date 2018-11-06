@@ -12,3 +12,5 @@ MC:
   ntherm_init: 1000
   ntherm: 1000
   nprod: 10000
+
+write_cfg: true

@@ -118,6 +118,8 @@ namespace YAML {
         checkSizeAndBroadcast(pc.ntherm, std::size(pc.params));
         checkSizeAndBroadcast(pc.nprod, std::size(pc.params));
 
+        pc.writeCfg = node["write_cfg"].as<bool>();
+
         return true;
     }
 }

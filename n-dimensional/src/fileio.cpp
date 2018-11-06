@@ -118,6 +118,17 @@ namespace YAML {
         checkSizeAndBroadcast(pc.ntherm, std::size(pc.params));
         checkSizeAndBroadcast(pc.nprod, std::size(pc.params));
 
+        std::string const startStr = mcNode["start"].as<std::string>();
+        if (startStr == "hot") {
+            pc.start = ProgConfig::HOT;
+        }
+        else if (startStr == "cold") {
+            pc.start = ProgConfig::COLD;
+        }
+        else {
+            throw std::invalid_argument("Invalid argument to input param 'start'");
+        }
+
         pc.writeCfg = node["write_cfg"].as<bool>();
 
         return true;

@@ -9,6 +9,7 @@ Parameters:
   h: [-2.0, -1.0, 0.0, 1.0, 2.0]
 
 MC:
+  start: hot
   ntherm_init: 1000
   ntherm: 1000
   nprod: 10000

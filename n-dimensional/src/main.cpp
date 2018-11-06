@@ -40,8 +40,9 @@ int main(int const argc, char const * const argv[])
     Lattice const lat{input.latticeShape};
     Rng rng{size(lat), input.rngSeed};
 
-    // initial state (hot)
-    Configuration cfg = randomCfg(size(lat), rng);
+    // initial state
+    Configuration cfg = (input.start==ProgConfig::HOT) ?
+        randomCfg(size(lat), rng) : Configuration{size(lat), Spin{+1}};
     double energy = hamiltonian(cfg, input.params.at(0), lat);
     double accRate;
 

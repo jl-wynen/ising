@@ -63,9 +63,9 @@ int main(int const argc, char const * const argv[])
 
         std::vector<Measurement> meas;
         if (input.writeCfg) {
-            meas.emplace_back([&](Configuration const &cfg, double const)
+            meas.emplace_back([&dir=outdir,i,  &params, &lat](Configuration const &cfg, double const)
                               {
-                                  write(outdir, i, cfg, params, lat);
+                                  write(dir, i, cfg, params, lat);
                               });
         }
 

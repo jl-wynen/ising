@@ -53,6 +53,12 @@ namespace {
         return {oss.str()};
     }
 
+    /// Output an Index.
+    std::ostream &operator<<(std::ostream &os, Index const idx)
+    {
+        return (os << idx.get());
+    }
+
     /// Output a vector of arbitrary elements.
     template <typename T>
     std::ostream &operator<<(std::ostream &os, std::vector<T> const &vec)
@@ -62,12 +68,6 @@ namespace {
         }
         os << vec.back();
         return os;
-    }
-
-    /// Output an Index.
-    std::ostream &operator<<(std::ostream &os, Index const idx)
-    {
-        return (os << idx.get());
     }
 
     /// Write ensemble metadata to given file.

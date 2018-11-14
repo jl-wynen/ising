@@ -7,6 +7,7 @@ Python implementation of the Ising model simulation.
 import sys
 import dataclasses
 from pathlib import Path
+import math
 import time
 
 import numpy as np
@@ -145,7 +146,7 @@ def evolve(cfg, energy, beta, nsweep, obs):
             # test if change is accepted
             # The first check is not necessary for this to be correct but avoids
             # evaluating the costly exponential and RNG.
-            if delta <= 0 or np.exp(-beta*delta) > np.random.uniform(0, 1):
+            if delta <= 0 or math.exp(-beta*delta) > np.random.uniform(0, 1):
                 cfg[x, y] = -cfg[x, y]  # apply the accepted change
                 energy += delta
                 naccept += 1

@@ -201,6 +201,8 @@ TEST_CASE("Loading ProgConfig from YAML", "[YAML]")
         REQUIRE(pc.nthermInit == 100);
         REQUIRE(pc.ntherm == std::vector<size_t>{100, 100, 100});
         REQUIRE(pc.nprod == std::vector<size_t>{1000, 1000, 1000});
+        REQUIRE(pc.start == ProgConfig::Start::HOT);
+        REQUIRE(pc.writeCfg == false);
     }
 
     SECTION("File validInput1.yml") {
@@ -215,6 +217,8 @@ TEST_CASE("Loading ProgConfig from YAML", "[YAML]")
         REQUIRE(pc.nthermInit == 100);
         REQUIRE(pc.ntherm == std::vector<size_t>{100, 200, 300});
         REQUIRE(pc.nprod == std::vector<size_t>{1000, 2000, 3000});
+        REQUIRE(pc.start == ProgConfig::Start::COLD);
+        REQUIRE(pc.writeCfg == true);
     }
 
     SECTION("File invalidInput0.yml") {

@@ -34,13 +34,6 @@ namespace {
         return oss.str();
     }
 
-    /// Check if two Parameter instances are exactly equal.
-    // Not very useful outside of these tests, so don't provide it globally.
-    bool operator==(Parameters const &a, Parameters const &b) noexcept
-    {
-        return a.JT == b.JT and a.hT == b.hT;
-    }
-
     /// Generate random ints and return them as doubles.
     // This should avoid problems when comparing floats with operator==.
     struct NumberRNG
@@ -53,6 +46,13 @@ namespace {
             return static_cast<double>(dist(rng));
         }
     };
+}
+
+/// Check if two Parameter instances are exactly equal.
+// Not very useful outside of these tests, so don't provide it globally.
+inline bool operator==(Parameters const &a, Parameters const &b) noexcept
+{
+    return a.JT == b.JT and a.hT == b.hT;
 }
 
 

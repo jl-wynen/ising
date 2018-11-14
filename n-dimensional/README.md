@@ -17,7 +17,7 @@ cmake --build .
 You can build and run unit tests from the build directory via
 ```
 make ising-test
-test/ising-test
+ising-test
 ```
 
 ## Run

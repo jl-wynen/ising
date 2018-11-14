@@ -8,6 +8,7 @@ import sys
 import dataclasses
 from pathlib import Path
 import math
+import random
 import time
 
 import numpy as np
@@ -137,8 +138,8 @@ def evolve(cfg, energy, beta, nsweep, obs):
     for _ in range(nsweep):
         for _ in range(latsize):
             # pick a random lattice site
-            x = np.random.randint(0, nx)
-            y = np.random.randint(0, ny)
+            x = random.randint(0, nx-1)
+            y = random.randint(0, ny-1)
 
             # compute proposed change in energy
             delta = delta_e(cfg, x, y)
@@ -146,7 +147,7 @@ def evolve(cfg, energy, beta, nsweep, obs):
             # test if change is accepted
             # The first check is not necessary for this to be correct but avoids
             # evaluating the costly exponential and RNG.
-            if delta <= 0 or math.exp(-beta*delta) > np.random.uniform(0, 1):
+            if math.exp(-beta*delta) > random.uniform(0, 1):
                 cfg[x, y] = -cfg[x, y]  # apply the accepted change
                 energy += delta
                 naccept += 1

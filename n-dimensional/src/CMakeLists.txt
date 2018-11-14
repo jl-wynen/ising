@@ -9,7 +9,7 @@ set(isingsrc)
 foreach (src IN LISTS SOURCE)
   list(APPEND isingsrc "${CMAKE_CURRENT_LIST_DIR}/${src}")
 endforeach ()
-set(BASE_SOURCE ${isinsrc} PARENT_SCOPE)
+set(BASE_SOURCE ${isingsrc} PARENT_SCOPE)
 unset(isingsrc)
 
 add_executable(ising ${SOURCE} main.cpp)

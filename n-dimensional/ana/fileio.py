@@ -1,4 +1,6 @@
 import re
+from operator import mul
+from functools import reduce
 
 import numpy as np
 
@@ -9,6 +11,9 @@ class Metadata:
         self.J = J
         self.h = h
         self.shape = shape
+
+    def latsize(self):
+        return reduce(mul, self.shape)
 
 def loadMetadata(fname):
     "Load metadata from first line of file."

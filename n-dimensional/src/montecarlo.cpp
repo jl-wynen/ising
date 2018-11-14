@@ -41,5 +41,8 @@ evolve(Configuration cfg, double energy, Parameters const& params,
         }
     }
 
-    return std::make_tuple(std::move(cfg), energy, static_cast<double>(naccept)/nsweep/size(lat).get());
+    return std::make_tuple(std::move(cfg), energy,
+                           static_cast<double>(naccept)
+                           / static_cast<double>(nsweep)
+                           / static_cast<double>(size(lat).get()));
 }

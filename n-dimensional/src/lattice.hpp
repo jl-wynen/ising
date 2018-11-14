@@ -76,9 +76,12 @@ struct Lattice
     /// Return a tuple of iterators to the beginning and one past end of neighbours of a site.
     auto neighbours(Index const site) const
     {
+        // type to add onto interators
+        using diff = decltype(std::cbegin(neighbourList_))::difference_type;
+
         Index const NDIM = ndim();
-        auto begin = std::cbegin(neighbourList_)+(2_i*NDIM*site).get();
-        auto end = begin + (2_i*NDIM).get();
+        auto begin = std::cbegin(neighbourList_)+static_cast<diff>((2_i*NDIM*site).get());
+        auto end = begin + static_cast<diff>((2_i*NDIM).get());
         return std::make_tuple(std::move(begin), std::move(end));
     }
 

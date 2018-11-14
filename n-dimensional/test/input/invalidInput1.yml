@@ -9,6 +9,9 @@ Parameters:
   h: [0.5, 0.7, 0.1]
 
 MC:
+  start: cold
   ntherm_init: 100
   ntherm: 100
   nprod: [1000, 1000]
+
+write_cfg: true

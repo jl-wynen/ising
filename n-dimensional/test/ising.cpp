@@ -18,17 +18,83 @@ TEST_CASE("Parameters can be constructed properly", "[Parameters]")
 
 TEST_CASE("Hamiltonian", "[Ising]")
 {
+    Rng rng(1_i, 6274);
+    constexpr size_t nsamples = 10;
+
+    SECTION("Manual 1 - Checkerboard")
+    {
+        // - + -
+        // + - +
+        // - + -
+        Lattice const lat{{3_i, 3_i}};
+        Configuration cfg(size(lat), Spin{+1});
+        for (Index i = 0_i; i < size(cfg); i=i+2_i) {
+            cfg[i] = Spin{-1};
+        }
+
+        for (size_t sample = 0; sample < nsamples; ++sample) {
+            Parameters const params{rng.genReal()*4.0-2.0, rng.genReal()-0.5};
+            REQUIRE(hamiltonian(cfg, params, lat) == Approx(params.JT*6.0 + params.hT));
+        }
+    }
+
+    SECTION("Manual 2 - Cluster")
+    {
+        // + + - -
+        // + + - -
+        // - - - -
+        // - - - -
+        Lattice const lat{{4_i, 4_i}};
+        Configuration cfg(size(lat), Spin{-1});
+        cfg[0_i] = Spin{+1};
+        cfg[1_i] = Spin{+1};
+        cfg[4_i] = Spin{+1};
+        cfg[5_i] = Spin{+1};
+
+        for (size_t sample = 0; sample < nsamples; ++sample) {
+            Parameters const params{rng.genReal()*3.0-1.5, rng.genReal()*2.0-1.0};
+            INFO("Sample " << sample << " with JT=" << params.JT << " hT=" << params.hT);
+            REQUIRE(hamiltonian(cfg, params, lat) == Approx(-params.JT*16.0 + params.hT*8.0));
+        }
+    }
+
+    SECTION("Manual 3 - 3D stripes")
+    {
+        // + - +  |  + + +  |  - - -
+        // + - +  |  + + +  |  + + +
+        // + - +  |  + + +  |  - - -
+        Lattice const lat{{3_i, 3_i, 3_i}};
+        Configuration cfg(size(lat), Spin{+1});
+
+        cfg[totalIndex({0_i, 1_i, 0_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({1_i, 1_i, 0_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({2_i, 1_i, 0_i}, lat.shape())] = Spin{-1};
+
+        cfg[totalIndex({0_i, 0_i, 2_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({0_i, 1_i, 2_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({0_i, 2_i, 2_i}, lat.shape())] = Spin{-1};
+
+        cfg[totalIndex({2_i, 0_i, 2_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({2_i, 1_i, 2_i}, lat.shape())] = Spin{-1};
+        cfg[totalIndex({2_i, 2_i, 2_i}, lat.shape())] = Spin{-1};
+
+        for (size_t sample = 0; sample < nsamples; ++sample) {
+            Parameters const params{rng.genReal()*2.0-1.0, rng.genReal()*4.2-2.1};
+            INFO("Sample " << sample << " with JT=" << params.JT << " hT=" << params.hT);
+            REQUIRE(hamiltonian(cfg, params, lat) == Approx(-params.JT*29.0 - params.hT*9.0));
+        }
+    }
+
     std::vector<std::vector<Index>> const shapes{
         {8_i},
         {32_i, 16_i},
         {16_i, 16_i, 16_i, 16_i},
         {8_i, 4_i, 8_i, 16_i, 5_i}
     };
-    constexpr size_t nsamples = 10;
+
 
     SECTION("For J=0, hamiltonian is like magnetisation")
     {
-        Rng rng(1_i, 6274);
         for (auto const &shape : shapes) {
             Lattice const lat{shape};
             rng.setLatsize(size(lat));

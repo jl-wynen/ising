@@ -254,7 +254,7 @@ fn main() {
 
     // initial condition (hot start)
     let mut cfg = Configuration::random(&mut rng);
-    let mut energy = hamiltonian(&cfg) as f64;
+    let mut energy = 0.0;  // does not matter for initial thermalisation
 
     // start measuring time, the above doesn't count
     let start_time = Instant::now();
@@ -266,6 +266,7 @@ fn main() {
     for (i, temp) in temperatures.iter().enumerate() {
         println!("Running for temperature {}", temp);
         let beta = 1./temp;
+        energy = hamiltonian(&cfg) as f64;
 
         // re-thermalise
         let naccept = evolve(&mut cfg, &mut energy, beta, &mut rng, NTHERM, None);

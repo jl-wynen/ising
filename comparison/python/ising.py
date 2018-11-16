@@ -19,14 +19,14 @@ import numba
 
 NTHERM_INIT = 1000  # number of thermalisation sweeps in the beginning
 NTHERM = 1000  # number of thermalisation sweeps per temperature
-NPROD = 10000  # number of production sweeps (with measurements) per temperature
+NPROD = 100000  # number of production sweeps (with measurements) per temperature
 
-NX = 5  # number of lattice sites in x direction
-NY = 5  # number of lattice sites in y direction
+NX = 10  # number of lattice sites in x direction
+NY = 10  # number of lattice sites in y direction
 
 # all the temperatures we want to measure at
 # TEMPERATURES = np.concatenate((np.arange(6., 0.4, -0.5), np.arange(0.4, 6., 0.5)))
-TEMPERATURES = np.arange(6., 0.4, -0.5)
+TEMPERATURES = [10.0]
 
 # seed for the random number generator
 SEED = 538
@@ -83,8 +83,7 @@ def hamiltonian(cfg):
     # Use numpy.roll to shift the array in x or y direction by one site.
     # This way, cfg*no.roll(...) multiplies nearest neighbours with the
     # speed of numpy.
-    return - 2*(np.sum(cfg*np.roll(cfg, -1, axis=0))
-                + np.sum(cfg*np.roll(cfg, -1, axis=1)))
+    return - np.sum(cfg*np.roll(cfg, -1, axis=0)+cfg*np.roll(cfg, -1, axis=1))
 
 def magnetisation(cfg):
     """
@@ -172,7 +171,7 @@ def main():
 
     # hot start
     cfg = np.random.choice([-1, 1], (NX, NY), replace=True)
-    energy = hamiltonian(cfg)
+    energy = 0  # does not matter for initial thermalisation
 
     # start timing now, the above doesn't really count
     start_time = time.time()
@@ -184,6 +183,7 @@ def main():
     for itemp, temperature in enumerate(TEMPERATURES):
         print(f"Running T = {temperature}")
         beta = 1 / temperature
+        energy = hamiltonian(cfg)
 
         # thermalise
         cfg, energy, naccept = evolve(cfg, energy, beta, NTHERM, None)

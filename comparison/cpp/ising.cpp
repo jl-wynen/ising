@@ -27,10 +27,10 @@ using Index = size_t;
 
 constexpr size_t NTHERM_INIT = 1000;  // number of thermalisation sweeps in the beginning
 constexpr size_t NTHERM = 1000;  // number of thermalisation sweeps per temperature
-constexpr size_t NPROD = 10000;  // number of production sweeps (with measurements) per temperature
+constexpr size_t NPROD = 100000;  // number of production sweeps (with measurements) per temperature
 
-constexpr Index NX = 16;  // number of lattice sites in x direction
-constexpr Index NY = 16;  // number of lattice sites in y direction
+constexpr Index NX = 10;  // number of lattice sites in x direction
+constexpr Index NY = 10;  // number of lattice sites in y direction
 
 // seed for the random number generator
 constexpr unsigned long SEED = 538;
@@ -46,7 +46,7 @@ constexpr auto listTemperatures() noexcept {
     // return temps;
 
     // just one element
-    return std::array{2.};
+    return std::array{10.0};
 }
 
 // End of run parameters.
@@ -227,7 +227,7 @@ int hamiltonian(Configuration const &cfg) noexcept
                               + cfg[cfg.neighbours[4*idx+2]]
                               + cfg[cfg.neighbours[4*idx+3]]);
     }
-    return -energy;
+    return -energy/2.0;  // /2 to count each link only once
 }
 
 /// Compute the magnetisation on a configuration.
@@ -341,7 +341,7 @@ int main(int const argc, char const * const argv[])
 
     // initial condition (hot start)
     auto cfg = randomCfg(rng);
-    auto energy = hamiltonian(cfg);
+    int energy = 0;  // does not matter for initial thermalisation
     size_t naccept;
 
     // start measuring time now
@@ -356,6 +356,7 @@ int main(int const argc, char const * const argv[])
     for (size_t itemp = 0; itemp < temperatures.size(); ++itemp) {
         std::cout << "Running T = " << temperatures[itemp] << '\n';
         auto const beta = 1./temperatures[itemp];
+        energy = hamiltonian(cfg);
 
         // re-thermalise
         std::tie(cfg, energy, naccept) = evolve(cfg, energy, beta, rng, NTHERM, nullptr);

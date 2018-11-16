@@ -43,7 +43,7 @@ int main(int const argc, char const * const argv[])
     // initial state
     Configuration cfg = (input.start==ProgConfig::HOT) ?
         randomCfg(size(lat), rng) : Configuration{size(lat), Spin{+1}};
-    double energy = hamiltonian(cfg, input.params.at(0), lat);
+    double energy = 0.0;  // it doesn't matter for the initial thermalisation
     double accRate;
 
     // initial thermalisation
@@ -61,9 +61,12 @@ int main(int const argc, char const * const argv[])
         auto const ntherm = input.ntherm.at(i);
         auto const nprod = input.nprod.at(i);
 
+        // (re-)compute energy with this set of parameters
+        energy = hamiltonian(cfg, params, lat);
+
         std::vector<Measurement> meas;
         if (input.writeCfg) {
-            meas.emplace_back([&dir=outdir,i,  &params, &lat](Configuration const &c, double const)
+            meas.emplace_back([&dir=outdir, i,  &params, &lat](Configuration const &c, double const)
                               {
                                   write(dir, i, c, params, lat);
                               });

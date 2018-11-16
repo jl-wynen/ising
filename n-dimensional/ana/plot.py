@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from fileio import loadFile
 
 def findVarying(params):
+    "Return index of varying parameter. There must be exactly 1, the others must be fixed."
+
     varying = [not np.all(p == p[0]) for p in params]
     if Counter(varying)[True] == 0:
         raise RuntimeError("No varying parameters")
@@ -17,6 +19,8 @@ def findVarying(params):
     return varying.index(True)
 
 def splitVarFixed(meta):
+    "Identify varying parameter and split it off from the rest."
+
     # extrac individual params from meta object
     decomposed = list(zip(*((m.shape, m.J, m.h) for m in meta)))
     kwparams = dict(shape=np.array(decomposed[0]),
@@ -36,20 +40,57 @@ def splitVarFixed(meta):
     return (varName, varVal), fixed
 
 def xsorted(x, y):
+    "Sort both x and y based on x."
     return tuple(zip(*sorted(zip(x, y), key=itemgetter(0))))
+
+def meanAndErr(x, nbs=100, bslength=None):
+    """
+    Compute mean and error of x, the latter via bottstrap
+    Parameters:
+      x: 1D array of data.
+      nbs: Number of bootstrap samples
+      bslength: Size of each bootstrap sample. Defaults to len(x)
+    """
+
+    if not bslength:
+        bslength = len(x)
+    bootstrapIndices = np.random.randint(0, len(x), [nbs, bslength])
+
+    return np.mean(x), np.std(np.mean(x[bootstrapIndices], axis=1), axis=0)
+
+def loadData(datadir, skip=1):
+    """
+    Load parameters, energies, and magnetisations from all datafiles in directory.
+    Parameters:
+      datadir: Input directory. All files datadir/*.dat are loaded.
+      skip: Stride for data arrays. Uses only every skip-th entry.
+    """
+
+    metas = []
+    energies = []
+    magns = []
+    for m, dat in map(loadFile, filter(lambda d: d.suffix == ".dat", datadir.iterdir())):
+        metas.append(m)
+        energies.append(meanAndErr(dat[0, ::skip]/m.latsize()))
+        magns.append(meanAndErr(np.abs(dat[1, ::skip])))
+
+    (xlabel, x), fixed = splitVarFixed(metas)
+    return (xlabel, x), fixed, energies, magns
+
 
 def main():
     if len(sys.argv) != 2:
         print("You need to provide the data directory as a command line argument!")
         sys.exit(1)
-
     datadir = Path(sys.argv[1])
 
-    meta, energy, magn = zip(*((meta, np.mean(dat[0]), np.mean(dat[1]))
-                               for meta, dat in map(loadFile, filter(lambda d: d.suffix == ".dat",
-                                                                     datadir.iterdir()))))
-    relEnergy = [e/m.latsize() for e, m in zip(energy, meta)]
-    (xlabel, x), fixed = splitVarFixed(meta)
+    np.random.seed(123)
+
+    (xlabel, x), fixed, ener, magn = loadData(datadir, skip=20)
+
+    if xlabel == "J":
+        x = 1/x
+        xlabel = "1/J"
 
     fig = plt.figure(figsize=(11, 5))
     fig.suptitle(",   ".join("{}={}".format(n, v) for n, v in fixed.items()))
@@ -57,12 +98,14 @@ def main():
     axe = fig.add_subplot(121)
     axe.set_xlabel(xlabel)
     axe.set_ylabel(r"$E / \Lambda$")
-    axe.plot(*xsorted(x, relEnergy), ls="-", marker=".")
+    xs, es = xsorted(x, ener)
+    axe.errorbar(xs, *zip(*es), ls="-", marker=".")
 
     axm = fig.add_subplot(122)
     axm.set_xlabel(xlabel)
-    axm.set_ylabel(r"$m$")
-    axm.plot(*xsorted(x, magn), ls="-", marker=".")
+    axm.set_ylabel(r"$|m|$")
+    xs, ms = xsorted(x, magn)
+    axm.errorbar(xs, *zip(*ms), ls="-", marker=".")
 
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()

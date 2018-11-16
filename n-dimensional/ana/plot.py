@@ -88,10 +88,6 @@ def main():
 
     (xlabel, x), fixed, ener, magn = loadData(datadir, skip=20)
 
-    if xlabel == "J":
-        x = 1/x
-        xlabel = "1/J"
-
     fig = plt.figure(figsize=(11, 5))
     fig.suptitle(",   ".join("{}={}".format(n, v) for n, v in fixed.items()))
 

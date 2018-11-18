@@ -47,14 +47,10 @@ struct ArithmeticType
         return value_;
     }
 
-    constexpr explicit operator Underlying&() noexcept
+    template <typename U>
+    constexpr explicit operator U const() noexcept
     {
-        return value_;
-    }
-
-    constexpr explicit operator Underlying const&() const noexcept
-    {
-        return value_;
+        return static_cast<U>(value_);
     }
 
 private:

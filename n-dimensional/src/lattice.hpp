@@ -3,15 +3,29 @@
 
 #include <vector>
 #include <tuple>
+#include <unordered_map>
+#include <utility>
+#include <optional>
 
 #include "index.hpp"
 #include "ndebug.hpp"
 
+
+/// N-dimensional index of a lattice site.
+using MultiIndex = std::vector<Index>;
+
+/// Map of squared distances to vectors of pairs of lattice sites with that separation.
+using DistMap = std::unordered_map<int, std::vector<std::pair<Index, Index>>>;
+
 /// Represent an n-dimensional lattice with an arbitrary (but hyperrectangular) shape.
 struct Lattice
 {
+    enum class DistanceFn { EUCLIDEAN, MANHATTAN };
+
     /// Construct from a shape.
-    explicit Lattice(std::vector<Index> const &shape);
+    explicit Lattice(std::vector<Index> const &shape,
+                     std::optional<double> maxDist = std::optional<double>{},
+                     DistanceFn distfn = DistanceFn::EUCLIDEAN);
 
     /// Construct from a shape.
     template <typename... Shape>
@@ -89,9 +103,11 @@ private:
     /// Indices of nearest neighbours.
     std::vector<Index> const neighbourList_;
     /// Shape of the lattice.
-    std::vector<Index> const shape_;
+    MultiIndex const shape_;
     /// Total size of the lattice.
     Index const size_;
+    /// Squared distances with all pairs of lattice sites witht hat separation up to some max distance.
+    DistMap const distMap_;
 };
 
 /// Return the total size of a lattice.

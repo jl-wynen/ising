@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 namespace {
     /// Load parameters as individual arrays.
@@ -71,7 +72,7 @@ namespace {
     }
 
     /// Write ensemble metadata to given file.
-    std::ofstream writeMetadata(std::ofstream &ofs, Parameters const &params,
+    std::ofstream writeMetadata(std::ofstream &&ofs, Parameters const &params,
                                 Lattice const &lat)
     {
         ofs << "# J=" << params.JT << " h=" << params.hT
@@ -86,7 +87,25 @@ namespace {
         std::ofstream ofs;
         ofs.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         ofs.open(fname, std::ios::trunc);
-        return writeMetadata(ofs, params, lat);
+        return writeMetadata(std::move(ofs), params, lat);
+    }
+
+    /// Write correlator to file.
+    void writeCorrelator(fs::path const &fname,
+                         Observables::Correlator const &correlator,
+                         Parameters const &params,
+                         Lattice const &lat)
+    {
+        std::vector<double> distances;
+        for (int const sqd : correlator.sqDistances) {
+            distances.emplace_back(std::sqrt(static_cast<double>(sqd)));
+        }
+
+        auto ofs = writeMetadata(fname, params, lat);
+        ofs << "# dstances=[" << distances << "]\n";
+        for (size_t i = 0; i < std::size(distances); ++i) {
+            ofs << correlator.correlator[i] << '\n';
+        }
     }
 }
 
@@ -158,9 +177,13 @@ void write(fs::path const &outdir, size_t const ensemble,
            Observables const &obs, Parameters const &params,
            Lattice const &lat)
 {
+    // write basic observables
     auto ofs = writeMetadata(outdir/outFname(ensemble), params, lat);
     ofs << obs.energy << '\n'
         << obs.magnetisation << '\n';
+    ofs.close();
+
+    writeCorrelator(outdir/outFname(ensemble, ".corr"), obs.corr, params, lat);
 }
 
 void write(fs::path const &outdir, size_t const ensemble,

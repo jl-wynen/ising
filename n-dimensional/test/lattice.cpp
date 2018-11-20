@@ -8,27 +8,6 @@ using IVec = std::vector<Index>;
 
 TEST_CASE("Construction of Lattice", "[Lattice]")
 {
-    SECTION("Constructing from individual indices gives the same as from vector")
-    {
-        SECTION("2D")
-        {
-            Lattice const lat1{3_i, 4_i};
-            Lattice const lat2{{3_i, 4_i}};
-            REQUIRE(lat1.size() == lat2.size());
-            REQUIRE(lat1.shape() == lat2.shape());
-            REQUIRE(lat1.neighbourList() == lat2.neighbourList());
-        }
-
-        SECTION("3D")
-        {
-            Lattice const lat1{6_i, 2_i, 11_i};
-            Lattice const lat2{{6_i, 2_i, 11_i}};
-            REQUIRE(lat1.size() == lat2.size());
-            REQUIRE(lat1.shape() == lat2.shape());
-            REQUIRE(lat1.neighbourList() == lat2.neighbourList());
-        }
-    }
-
     SECTION("Constructing just stores the shape")
     {
         IVec shape;
@@ -65,7 +44,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
 
     SECTION("Manual simple 1D case")
     {
-        Lattice const lat{5_i};
+        Lattice const lat{{5_i}};
         REQUIRE(sortedNeighbours(lat, 0_i) == IVec{1_i, 4_i});
         REQUIRE(sortedNeighbours(lat, 1_i) == IVec{0_i, 2_i});
         REQUIRE(sortedNeighbours(lat, 2_i) == IVec{1_i, 3_i});
@@ -75,7 +54,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
 
     SECTION("Manual simple 2D case")
     {
-        Lattice const lat{3_i, 3_i};
+        Lattice const lat{{3_i, 3_i}};
         REQUIRE(sortedNeighbours(lat, 0_i) == IVec{1_i, 2_i, 3_i, 6_i});
         REQUIRE(sortedNeighbours(lat, 1_i) == IVec{0_i, 2_i, 4_i, 7_i});
         REQUIRE(sortedNeighbours(lat, 2_i) == IVec{0_i, 1_i, 5_i, 8_i});
@@ -144,8 +123,8 @@ TEST_CASE("Lattice layout", "[Lattice]")
 
     SECTION("2D lattice layout is row-major")
     {
-        Lattice const lat{4_i, 7_i};
-        IVec const index{2_i, 4_i};
+        Lattice const lat{{4_i, 7_i}};
+        IVec const index{{2_i, 4_i}};
 
         // in dimension 0 (row)
         IVec const incremented0{3_i, 4_i};

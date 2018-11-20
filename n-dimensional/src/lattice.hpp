@@ -34,15 +34,6 @@ struct Lattice
                      std::optional<double> maxDist = std::optional<double>{},
                      DistanceFn distfn = DistanceFn::EUCLIDEAN);
 
-    /// Construct from a shape.
-    template <typename... Shape>
-    explicit Lattice(Shape ...shape)
-        : Lattice{{shape...}}
-    {
-        static_assert((... and std::is_same_v<Shape, Index>),
-                      "Lattice shape must be given as variables of type Index");
-    }
-
     /// Return total lattice size.
     Index size() const noexcept
     {

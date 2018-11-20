@@ -37,7 +37,7 @@ int main(int const argc, char const * const argv[])
     auto const input = YAML::LoadFile(infile).as<ProgConfig>();
     prepareOutdir(outdir);
 
-    Lattice const lat{input.latticeShape, 4.1, Lattice::DistanceFn::EUCLIDEAN};
+    Lattice const lat{input.lattice.shape, input.lattice.maxDist, input.lattice.distfn};
     Rng rng{size(lat), input.rngSeed};
 
     // initial state

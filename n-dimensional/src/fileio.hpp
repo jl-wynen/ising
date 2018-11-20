@@ -3,12 +3,14 @@
 
 #include <vector>
 #include <filesystem>
+#include <optional>
 
 #include <yaml-cpp/yaml.h>
 
 #include "ising.hpp"
 #include "montecarlo.hpp"
 #include "index.hpp"
+#include "lattice.hpp"
 
 namespace fs = std::filesystem;
 
@@ -16,9 +18,15 @@ namespace fs = std::filesystem;
 /// Program configuration as read from input file.
 struct ProgConfig
 {
-    std::vector<Index> latticeShape;
     unsigned long rngSeed;
     std::vector<Parameters> params;
+
+    struct Lattice
+    {
+        MultiIndex shape;
+        std::optional<double> maxDist;
+        ::Lattice::DistanceFn distfn;
+    } lattice;
 
     struct MC
     {

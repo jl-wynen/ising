@@ -126,9 +126,20 @@ namespace YAML {
         }
 
         // base params
-        pc.latticeShape = node["Lattice"]["shape"].as<std::vector<Index>>();
         pc.rngSeed = node["RNG"]["seed"].as<unsigned long>();
         pc.params = loadParams(node["Parameters"]);
+
+        // Lattice
+        auto const &latNode = node["Lattice"];
+        pc.lattice.shape = latNode["shape"].as<std::vector<Index>>();
+        pc.lattice.maxDist = latNode["max_dist"]
+            ? std::optional<double>(latNode["max_dist"].as<double>())
+            : std::optional<double>();
+        pc.lattice.distfn = latNode["dist_fn"]
+            ? (latNode["dist_fn"].as<std::string>() == "manhattan"
+               ? ::Lattice::DistanceFn::MANHATTAN
+               : ::Lattice::DistanceFn::EUCLIDEAN)
+            : ::Lattice::DistanceFn::EUCLIDEAN;
 
         // MC
         auto const &mcNode = node["MC"];

@@ -1,5 +1,7 @@
 Lattice:
   shape: [20, 20]
+  max_dist: 4.1
+  dist_fn: euclidean
 
 RNG:
   seed: 537

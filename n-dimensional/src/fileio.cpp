@@ -102,7 +102,7 @@ namespace {
         }
 
         auto ofs = writeMetadata(fname, params, lat);
-        ofs << "# dstances=[" << distances << "]\n";
+        ofs << "# distances=[" << distances << "]\n";
         for (size_t i = 0; i < std::size(distances); ++i) {
             ofs << correlator.correlator[i] << '\n';
         }

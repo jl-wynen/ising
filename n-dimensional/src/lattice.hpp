@@ -118,7 +118,7 @@ struct Lattice
     }
 
     /// Return vector of pairs of all sites with given squared distance.
-    auto const &pairWithSqDistance(int const sqDistance) const
+    auto const &pairsWithSqDistance(int const sqDistance) const
     {
         return distMap_.at(sqDistance);
     }

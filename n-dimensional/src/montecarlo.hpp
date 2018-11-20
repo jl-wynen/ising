@@ -16,6 +16,16 @@ struct Observables
 {
     std::vector<double> energy;
     std::vector<double> magnetisation;
+
+    struct Correlator
+    {
+        std::vector<int> const sqDistances;
+        std::vector<std::vector<double>> correlator;
+
+        explicit Correlator(std::vector<int> &&sqd);
+    } corr;
+
+    explicit Observables(Lattice const &lat);
 };
 
 /// Evolve a configuration in Monte-Carlo time.

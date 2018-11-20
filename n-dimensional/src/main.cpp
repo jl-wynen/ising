@@ -83,7 +83,7 @@ int main(int const argc, char const * const argv[])
                   << accRate << '\n';
 
         // measure
-        Observables obs;
+        Observables obs(lat);
         std::tie(cfg, energy, accRate) = evolve(cfg, energy, params,
                                                 lat, rng, nprod, &obs, meas);
         endTime = Clock::now();

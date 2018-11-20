@@ -4,6 +4,44 @@
 
 using std::exp;
 
+Observables::Observables(Lattice const &lat)
+    : energy(), magnetisation(), corr(lat.sqDistances())
+{ }
+
+Observables::Correlator::Correlator(std::vector<int> &&sqd)
+    : sqDistances(std::move(sqd)), correlator()
+{
+    correlator.resize(std::size(sqDistances));
+}
+
+
+namespace {
+    void measureCorrelator(Observables::Correlator &corr, Lattice const &lat, Configuration const &cfg)
+    {
+        for (size_t sqdi = 0; sqdi < std::size(corr.sqDistances); ++sqdi) {
+            Spin aux = Spin{0};
+            size_t n = 0;
+            for (auto const [i, j] : lat.pairsWithSqDistance(corr.sqDistances[sqdi])) {
+                aux = aux + cfg[i]*cfg[j];
+                ++n;
+            }
+            corr.correlator[sqdi].emplace_back(static_cast<double>(aux)/static_cast<double>(n));
+        }
+    }
+
+    /// Measure observables if an instance of Observables is given.
+    void measure(Observables * const obs, Lattice const &lat,
+                 Configuration const &cfg, double const energy)
+    {
+        if (obs) {
+            obs->energy.emplace_back(energy);
+            obs->magnetisation.emplace_back(magnetisation(cfg));
+            measureCorrelator(obs->corr, lat, cfg);
+        }
+    }
+}
+
+
 std::tuple<Configuration, double, double>
 evolve(Configuration cfg, double energy, Parameters const& params,
        Lattice const &lat, Rng &rng, size_t const nsweep,
@@ -29,11 +67,7 @@ evolve(Configuration cfg, double energy, Parameters const& params,
             // else: discard
         }
 
-        // measure observables if an instance of Observables is given
-        if (obs) {
-            obs->energy.emplace_back(energy);
-            obs->magnetisation.emplace_back(magnetisation(cfg));
-        }
+        measure(obs, lat, cfg, energy);
 
         // perform extra measurements
         for (auto const &meas : extraMeas) {

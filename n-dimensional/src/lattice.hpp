@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <utility>
 #include <optional>
+#include <algorithm>
 
 #include "index.hpp"
 #include "ndebug.hpp"
@@ -23,8 +24,13 @@ struct Lattice
     /// Identify a function to calculate distances on a lattice.
     enum class DistanceFn { EUCLIDEAN, MANHATTAN };
 
-    /// Construct from a shape.
-    explicit Lattice(std::vector<Index> const &shape,
+    /// Construct from a shape and configure distance map.
+    /**
+     * \param shape N-dimensional shape of the lattice to construct.
+     * \param maxDist Construct distance map only up to this maximum (non squared) distance.
+     * \param distfn Function to use to compute distances on the lattice.
+     */
+    explicit Lattice(MultiIndex const &shape,
                      std::optional<double> maxDist = std::optional<double>{},
                      DistanceFn distfn = DistanceFn::EUCLIDEAN);
 
@@ -98,6 +104,17 @@ struct Lattice
         auto begin = std::cbegin(neighbourList_)+static_cast<diff>((2_i*NDIM*site).get());
         auto end = begin + static_cast<diff>((2_i*NDIM).get());
         return std::make_tuple(std::move(begin), std::move(end));
+    }
+
+    /// Return sorted vector of all squared distances stored in the map.
+    auto sqDistances() const
+    {
+        std::vector<int> distances;
+        for (auto const [key, _] : distMap_) {
+            distances.emplace_back(key);
+        }
+        std::sort(std::begin(distances), std::end(distances));
+        return distances;
     }
 
     /// Return vector of pairs of all sites with given squared distance.

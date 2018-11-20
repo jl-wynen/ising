@@ -143,6 +143,7 @@ namespace
         return distance * distance;
     }
 
+    /// Cosntruct a map of all distances on a lattice to pairs of indices of sites with that distance.
     DistMap buildDistMap(MultiIndex const &shape,
                          std::optional<double> const maxDist,
                          int (*sqdist)(std::vector<int> const &))
@@ -151,18 +152,20 @@ namespace
         Index const latsize = latticeSize(shape);
 
         DistMap distmap;
-        MultiIndex site0(ndim, 0_i);
+        MultiIndex site0(ndim, 0_i);  // first index
 
-        for (Index i = 0_i; i < latsize-1_i; ++i) {
-            MultiIndex site1 = site0;
-            for (Index j = i; j < latsize; ++j) {
+        for (Index i = 0_i; i < latsize-1_i; ++i) {  // move site0 through the lattice
+            MultiIndex site1 = site0;  // compute distances between this and site0
+            for (Index j = i; j < latsize; ++j) {  // move site1 through the lattice
                 int const dist = sqMindist(site0, site1, shape, sqdist);
 
-                if (maxDist and dist < maxDist.value()) {
+                if (maxDist and std::sqrt(static_cast<double>(dist)) < maxDist.value()) {
                     if (distmap.find(dist) != std::end(distmap)) {
+                        // had this distance before => append new pair
                         distmap.at(dist).emplace_back(i, j);
                     }
                     else {
+                        // new distance => insert new vector
                         distmap.emplace(dist, std::vector(1, std::make_pair(i, j)));
                     }
                 }

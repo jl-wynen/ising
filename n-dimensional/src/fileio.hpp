@@ -16,16 +16,26 @@ namespace fs = std::filesystem;
 /// Program configuration as read from input file.
 struct ProgConfig
 {
-    enum Start { HOT, COLD };
-
     std::vector<Index> latticeShape;
     unsigned long rngSeed;
     std::vector<Parameters> params;
-    size_t nthermInit;
-    std::vector<size_t> ntherm;
-    std::vector<size_t> nprod;
-    Start start;
-    bool writeCfg;
+
+    struct MC
+    {
+        enum Start { HOT, COLD };
+        Start start;
+        size_t nthermInit;
+        std::vector<size_t> ntherm;
+        std::vector<size_t> nprod;
+    } mc;
+
+    struct Meas
+    {
+        bool energy;
+        bool magnetisation;
+        bool correlator;
+        bool writeCfg;
+    } meas;
 };
 
 

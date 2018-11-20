@@ -37,11 +37,11 @@ int main(int const argc, char const * const argv[])
     auto const input = YAML::LoadFile(infile).as<ProgConfig>();
     prepareOutdir(outdir);
 
-    Lattice const lat{input.latticeShape};
+    Lattice const lat{input.latticeShape, 4.1, Lattice::DistanceFn::EUCLIDEAN};
     Rng rng{size(lat), input.rngSeed};
 
     // initial state
-    Configuration cfg = (input.start==ProgConfig::HOT) ?
+    Configuration cfg = (input.mc.start==ProgConfig::MC::HOT) ?
         randomCfg(size(lat), rng) : Configuration{size(lat), Spin{+1}};
     double energy = 0.0;  // it doesn't matter for the initial thermalisation
     double accRate;
@@ -49,7 +49,7 @@ int main(int const argc, char const * const argv[])
     // initial thermalisation
     auto startTime = Clock::now();
     std::tie(cfg, energy, accRate) = evolve(cfg, energy, input.params.at(0), lat,
-                                            rng, input.nthermInit, nullptr);
+                                            rng, input.mc.nthermInit, nullptr);
     auto endTime = Clock::now();
     std::cout << "Initial thermalisation acceptance rate: " << std::setprecision(4)
               << accRate << '\n'
@@ -58,14 +58,14 @@ int main(int const argc, char const * const argv[])
 
     for (size_t i = 0; i < std::size(input.params); ++i) {
         auto const params = input.params.at(i);
-        auto const ntherm = input.ntherm.at(i);
-        auto const nprod = input.nprod.at(i);
+        auto const ntherm = input.mc.ntherm.at(i);
+        auto const nprod = input.mc.nprod.at(i);
 
         // (re-)compute energy with this set of parameters
         energy = hamiltonian(cfg, params, lat);
 
         std::vector<Measurement> meas;
-        if (input.writeCfg) {
+        if (input.meas.writeCfg) {
             meas.emplace_back([&dir=outdir, i,  &params, &lat](Configuration const &c, double const)
                               {
                                   write(dir, i, c, params, lat);

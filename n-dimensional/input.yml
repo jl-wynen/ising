@@ -1,12 +1,12 @@
 Lattice:
-  shape: [16, 16]
+  shape: [20, 20]
 
 RNG:
   seed: 537
 
 Parameters:
-  J: [0.2]
-  h: [-2.0, -1.0, 0.0, 1.0, 2.0]
+  J: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+  h: [0.0]
 
 MC:
   start: hot
@@ -14,4 +14,8 @@ MC:
   ntherm: 1000
   nprod: 10000
 
-write_cfg: false
+Meas:
+  energy: true
+  magnetisation: true
+  correlator: true
+  write_cfg: false

@@ -125,30 +125,37 @@ namespace YAML {
             return false;
         }
 
+        // base params
         pc.latticeShape = node["Lattice"]["shape"].as<std::vector<Index>>();
         pc.rngSeed = node["RNG"]["seed"].as<unsigned long>();
         pc.params = loadParams(node["Parameters"]);
 
+        // MC
         auto const &mcNode = node["MC"];
-        pc.nthermInit = mcNode["ntherm_init"].as<size_t>();
-        pc.ntherm = loadVector<size_t>(mcNode["ntherm"]);
-        pc.nprod = loadVector<size_t>(mcNode["nprod"]);
-
-        checkSizeAndBroadcast(pc.ntherm, std::size(pc.params));
-        checkSizeAndBroadcast(pc.nprod, std::size(pc.params));
 
         std::string const startStr = mcNode["start"].as<std::string>();
         if (startStr == "hot") {
-            pc.start = ProgConfig::HOT;
+            pc.mc.start = ProgConfig::MC::HOT;
         }
         else if (startStr == "cold") {
-            pc.start = ProgConfig::COLD;
+            pc.mc.start = ProgConfig::MC::COLD;
         }
         else {
             throw std::invalid_argument("Invalid argument to input param 'start'");
         }
 
-        pc.writeCfg = node["write_cfg"].as<bool>();
+        pc.mc.nthermInit = mcNode["ntherm_init"].as<size_t>();
+        pc.mc.ntherm = loadVector<size_t>(mcNode["ntherm"]);
+        pc.mc.nprod = loadVector<size_t>(mcNode["nprod"]);
+        checkSizeAndBroadcast(pc.mc.ntherm, std::size(pc.params));
+        checkSizeAndBroadcast(pc.mc.nprod, std::size(pc.params));
+
+        // meas
+        auto const &measNode = node["Meas"];
+        pc.meas.energy = measNode["energy"].as<bool>();
+        pc.meas.magnetisation = measNode["magnetisation"].as<bool>();
+        pc.meas.correlator = measNode["correlator"].as<bool>();
+        pc.meas.writeCfg = measNode["write_cfg"].as<bool>();
 
         return true;
     }

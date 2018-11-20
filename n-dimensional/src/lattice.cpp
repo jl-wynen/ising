@@ -159,7 +159,7 @@ namespace
             for (Index j = i; j < latsize; ++j) {  // move site1 through the lattice
                 int const dist = sqMindist(site0, site1, shape, sqdist);
 
-                if (maxDist and std::sqrt(static_cast<double>(dist)) < maxDist.value()) {
+                if (not maxDist or std::sqrt(static_cast<double>(dist)) < maxDist.value()) {
                     if (distmap.find(dist) != std::end(distmap)) {
                         // had this distance before => append new pair
                         distmap.at(dist).emplace_back(i, j);

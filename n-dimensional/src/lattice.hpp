@@ -20,6 +20,7 @@ using DistMap = std::unordered_map<int, std::vector<std::pair<Index, Index>>>;
 /// Represent an n-dimensional lattice with an arbitrary (but hyperrectangular) shape.
 struct Lattice
 {
+    /// Identify a function to calculate distances on a lattice.
     enum class DistanceFn { EUCLIDEAN, MANHATTAN };
 
     /// Construct from a shape.
@@ -97,6 +98,12 @@ struct Lattice
         auto begin = std::cbegin(neighbourList_)+static_cast<diff>((2_i*NDIM*site).get());
         auto end = begin + static_cast<diff>((2_i*NDIM).get());
         return std::make_tuple(std::move(begin), std::move(end));
+    }
+
+    /// Return vector of pairs of all sites with given squared distance.
+    auto const &pairWithSqDistance(int const sqDistance) const
+    {
+        return distMap_.at(sqDistance);
     }
 
 private:

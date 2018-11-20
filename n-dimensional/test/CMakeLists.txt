@@ -21,8 +21,8 @@ target_link_libraries(ising-test stdc++fs)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
     OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   target_compile_options(ising-test PUBLIC -fsanitize=address -fno-omit-frame-pointer)
+  set_target_properties(ising-test PROPERTIES LINK_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
 endif()
-set_target_properties(ising-test PROPERTIES LINK_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
 
 target_compile_definitions(ising-test PUBLIC "-DISLE_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 

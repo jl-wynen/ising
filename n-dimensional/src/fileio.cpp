@@ -64,10 +64,12 @@ namespace {
     template <typename T>
     std::ostream &operator<<(std::ostream &os, std::vector<T> const &vec)
     {
-        for (size_t i = 0; i < std::size(vec)-1; ++i) {
-            os << vec[i] << ", ";
+        if (std::size(vec) > 0) {
+            for (size_t i = 0; i+1 < std::size(vec); ++i) {
+                os << vec[i] << ", ";
+            }
+            os << vec.back();
         }
-        os << vec.back();
         return os;
     }
 

@@ -48,7 +48,7 @@ struct ArithmeticType
     }
 
     template <typename U>
-    constexpr explicit operator U const() noexcept
+    constexpr explicit operator U const() const noexcept
     {
         return static_cast<U>(value_);
     }

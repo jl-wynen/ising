@@ -12,6 +12,9 @@ class Metadata:
         self.h = h
         self.shape = shape
 
+    def __eq__(self, other):
+        return self.J == other.J and self.h == other.h and self.shape == other.shape
+
     def latsize(self):
         return reduce(mul, self.shape)
 
@@ -32,3 +35,15 @@ def loadFile(fname):
     "Load meta- and 'normal' data from file."
     return loadMetadata(fname), \
         np.loadtxt(fname, skiprows=1, delimiter=",")
+
+def loadCorrFile(fname):
+    "Load meta- and correlator data from file."
+    meta = loadMetadata(fname)
+
+    with open(fname, "r") as infile:
+        infile.readline()  # skip metadata
+        distances = [float(d) for d in re.match(r"# distances=\[([^\]]+)\]",
+                                                infile.readline())[1].split(",")]
+    corrs = np.loadtxt(fname, skiprows=2, delimiter=",")
+    return meta, distances, corrs
+

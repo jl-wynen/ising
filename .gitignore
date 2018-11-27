@@ -1,5 +1,7 @@
 # Data files
 *.dat
+*.corr
+*.cfg
 
 # C++ binaries
 comparison/cpp/build

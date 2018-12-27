@@ -14,4 +14,8 @@ MC:
   ntherm: 100
   nprod: 1000
 
-write_cfg: false
+Meas:
+  energy: true
+  magnetisation: true
+  correlator: true
+  write_cfg: false

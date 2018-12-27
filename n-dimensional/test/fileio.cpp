@@ -193,32 +193,48 @@ TEST_CASE("Loading ProgConfig from YAML", "[YAML]")
         YAML::Node node = YAML::LoadFile(inputDir/"validInput0.yml");
         ProgConfig const pc = node.as<ProgConfig>();
 
-        REQUIRE(pc.latticeShape == std::vector<Index>{3_i, 3_i});
         REQUIRE(pc.rngSeed == 537);
         REQUIRE(pc.params[0] == Parameters{1.0, 0.5});
         REQUIRE(pc.params[1] == Parameters{1.0, 0.7});
         REQUIRE(pc.params[2] == Parameters{1.0, 0.1});
-        REQUIRE(pc.nthermInit == 100);
-        REQUIRE(pc.ntherm == std::vector<size_t>{100, 100, 100});
-        REQUIRE(pc.nprod == std::vector<size_t>{1000, 1000, 1000});
-        REQUIRE(pc.start == ProgConfig::Start::HOT);
-        REQUIRE(pc.writeCfg == false);
+
+        REQUIRE(pc.lattice.shape == std::vector<Index>{3_i, 3_i});
+        REQUIRE(not pc.lattice.maxDist);
+        REQUIRE(pc.lattice.distfn == Lattice::DistanceFn::EUCLIDEAN);
+
+        REQUIRE(pc.mc.nthermInit == 100);
+        REQUIRE(pc.mc.ntherm == std::vector<size_t>{100, 100, 100});
+        REQUIRE(pc.mc.nprod == std::vector<size_t>{1000, 1000, 1000});
+        REQUIRE(pc.mc.start == ProgConfig::MC::Start::HOT);
+
+        REQUIRE(pc.meas.energy == true);
+        REQUIRE(pc.meas.magnetisation == true);
+        REQUIRE(pc.meas.correlator == true);
+        REQUIRE(pc.meas.writeCfg == false);
     }
 
     SECTION("File validInput1.yml") {
         YAML::Node node = YAML::LoadFile(inputDir/"validInput1.yml");
         ProgConfig const pc = node.as<ProgConfig>();
 
-        REQUIRE(pc.latticeShape == std::vector<Index>{5_i, 3_i, 7_i});
         REQUIRE(pc.rngSeed == 123);
         REQUIRE(pc.params[0] == Parameters{1.0, 0.1});
         REQUIRE(pc.params[1] == Parameters{2.0, 0.1});
         REQUIRE(pc.params[2] == Parameters{3.0, 0.1});
-        REQUIRE(pc.nthermInit == 100);
-        REQUIRE(pc.ntherm == std::vector<size_t>{100, 200, 300});
-        REQUIRE(pc.nprod == std::vector<size_t>{1000, 2000, 3000});
-        REQUIRE(pc.start == ProgConfig::Start::COLD);
-        REQUIRE(pc.writeCfg == true);
+
+        REQUIRE(pc.lattice.shape == std::vector<Index>{5_i, 3_i, 7_i});
+        REQUIRE(pc.lattice.maxDist == 5);
+        REQUIRE(pc.lattice.distfn == Lattice::DistanceFn::MANHATTAN);
+
+        REQUIRE(pc.mc.nthermInit == 100);
+        REQUIRE(pc.mc.ntherm == std::vector<size_t>{100, 200, 300});
+        REQUIRE(pc.mc.nprod == std::vector<size_t>{1000, 2000, 3000});
+        REQUIRE(pc.mc.start == ProgConfig::MC::Start::COLD);
+
+        REQUIRE(pc.meas.energy == false);
+        REQUIRE(pc.meas.magnetisation == true);
+        REQUIRE(pc.meas.correlator == false);
+        REQUIRE(pc.meas.writeCfg == true);
     }
 
     SECTION("File invalidInput0.yml") {

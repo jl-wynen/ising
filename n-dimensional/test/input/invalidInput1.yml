@@ -1,5 +1,7 @@
 Lattice:
   shape: [3, 3]
+  max_dist: 5
+  dist_fn: manhattan
 
 RNG:
   seed: 537
@@ -14,4 +16,8 @@ MC:
   ntherm: 100
   nprod: [1000, 1000]
 
-write_cfg: true
+Meas:
+  energy: false
+  magnetisation: true
+  correlator: false
+  write_cfg: true

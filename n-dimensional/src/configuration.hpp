@@ -73,6 +73,7 @@ struct Configuration
         return cfg.cfg_.end();
     }
 
+    /// Flip the sign at site idx.
     void flip(Index const idx) noexcept(ndebug)
     {
         (*this)[idx] = (*this)[idx] * Spin(-1);

@@ -152,6 +152,11 @@ namespace
         Index const latsize = latticeSize(shape);
 
         DistMap distmap;
+
+        if (maxDist == 0.0) {  // short cut to avoid expensive loops for large lattices
+            return distmap;
+        }
+
         MultiIndex site0(ndim, 0_i);  // first index
 
         for (Index i = 0_i; i < latsize-1_i; ++i) {  // move site0 through the lattice

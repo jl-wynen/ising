@@ -26,7 +26,7 @@ TEST_CASE("Hamiltonian", "[Ising]")
         // - + -
         // + - +
         // - + -
-        Lattice const lat{{3_i, 3_i}};
+        Lattice const lat{{3_i, 3_i}, 0.0};
         Configuration cfg(size(lat), Spin{+1});
         for (Index i = 0_i; i < size(cfg); i=i+2_i) {
             cfg[i] = Spin{-1};
@@ -44,7 +44,7 @@ TEST_CASE("Hamiltonian", "[Ising]")
         // + + - -
         // - - - -
         // - - - -
-        Lattice const lat{{4_i, 4_i}};
+        Lattice const lat{{4_i, 4_i}, 0.0};
         Configuration cfg(size(lat), Spin{-1});
         cfg[0_i] = Spin{+1};
         cfg[1_i] = Spin{+1};
@@ -63,7 +63,7 @@ TEST_CASE("Hamiltonian", "[Ising]")
         // + - +  |  + + +  |  - - -
         // + - +  |  + + +  |  + + +
         // + - +  |  + + +  |  - - -
-        Lattice const lat{{3_i, 3_i, 3_i}};
+        Lattice const lat{{3_i, 3_i, 3_i}, 0.0};
         Configuration cfg(size(lat), Spin{+1});
 
         cfg[totalIndex({0_i, 1_i, 0_i}, lat.shape())] = Spin{-1};
@@ -96,7 +96,7 @@ TEST_CASE("Hamiltonian", "[Ising]")
     SECTION("For J=0, hamiltonian is like magnetisation")
     {
         for (auto const &shape : shapes) {
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
             rng.setLatsize(size(lat));
 
             for (size_t sample = 0; sample < nsamples; ++sample) {
@@ -111,7 +111,7 @@ TEST_CASE("Hamiltonian", "[Ising]")
     SECTION("All spins aligned gives -(ndim*J+h)*sum s")
     {
         for (auto const &shape : shapes) {
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
 
             for (size_t sample = 0; sample < nsamples; ++sample) {
                 Parameters params{1.1-2*sample, -0.7+sample*0.13};
@@ -139,7 +139,7 @@ TEST_CASE("Delta E", "[Ising]")
     SECTION("Delta E gives the same result as difference of hamiltonian")
     {
         for (auto const &shape : shapes) {
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
             rng.setLatsize(size(lat));
 
             for (size_t sample = 0; sample < nsamples; ++sample) {

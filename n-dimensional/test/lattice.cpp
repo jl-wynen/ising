@@ -15,7 +15,7 @@ TEST_CASE("Construction of Lattice", "[Lattice]")
         for (size_t i = 0; i < 5; ++i) {
             shape.emplace_back((i-2)*(i-2)+6);
 
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
             REQUIRE(lat.shape() == shape);
             REQUIRE(lat.ndim().get() == std::size(shape));
 
@@ -44,7 +44,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
 
     SECTION("Manual simple 1D case")
     {
-        Lattice const lat{{5_i}};
+        Lattice const lat{{5_i}, 0.0};
         REQUIRE(sortedNeighbours(lat, 0_i) == IVec{1_i, 4_i});
         REQUIRE(sortedNeighbours(lat, 1_i) == IVec{0_i, 2_i});
         REQUIRE(sortedNeighbours(lat, 2_i) == IVec{1_i, 3_i});
@@ -54,7 +54,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
 
     SECTION("Manual simple 2D case")
     {
-        Lattice const lat{{3_i, 3_i}};
+        Lattice const lat{{3_i, 3_i}, 0.0};
         REQUIRE(sortedNeighbours(lat, 0_i) == IVec{1_i, 2_i, 3_i, 6_i});
         REQUIRE(sortedNeighbours(lat, 1_i) == IVec{0_i, 2_i, 4_i, 7_i});
         REQUIRE(sortedNeighbours(lat, 2_i) == IVec{0_i, 1_i, 5_i, 8_i});
@@ -76,7 +76,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
     SECTION("All ways of getting neighbours are equivalent")
     {
         for (auto const &shape : shapes) {
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
 
             for (Index i = 0_i; i < lat.size(); ++i) {
                 auto const [begin, end] = lat.neighbours(i);
@@ -93,7 +93,7 @@ TEST_CASE("Nearest Neighbour Indices", "[Lattice]")
     SECTION("Neighbour indices are symmetric")
     {
         for (auto const &shape : shapes) {
-            Lattice const lat{shape};
+            Lattice const lat{shape, 0.0};
 
             for (Index i = 0_i; i < lat.size(); ++i) {
 
@@ -123,7 +123,7 @@ TEST_CASE("Lattice layout", "[Lattice]")
 
     SECTION("2D lattice layout is row-major")
     {
-        Lattice const lat{{4_i, 7_i}};
+        Lattice const lat{{4_i, 7_i}, 0.0};
         IVec const index{{2_i, 4_i}};
 
         // in dimension 0 (row)
